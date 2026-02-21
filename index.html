@@ -1774,7 +1774,7 @@ function DevSection({ title, items, papers, onNavigate }) {
                   <span style={{ fontSize: "9px", color: "#bbb", fontStyle: "italic", fontFamily: "sans-serif" }}>empty</span>
                 )}
                 <button
-                  onClick={(e) => { e.stopPropagation(); onEdit([devKey], effectiveDetail, "cards"); }}
+                  onClick={(e) => { e.stopPropagation(); onEdit(["dev", item.name], effectiveDetail); }}
                   title="Edit content"
                   style={{ fontSize: "11px", padding: "1px 6px", backgroundColor: "transparent", color: "#bbb", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", lineHeight: 1.4, transition: "all 0.15s" }}
                   onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
