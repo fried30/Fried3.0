@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IB History – Revision Architecture</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    * { box-sizing: border-box; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect } = React;
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+// Content format for crisis causes/impact (bullet cards):
+//   [{ title: "...", bullets: ["...", ...] }, ...]
+// Content format for crisis leaderContent:
+//   [{ name: "LeaderName", bullets: ["...", ...] }, ...]
+// Content format for suboutline leaf nodes:
+//   { name: "...", content: [{ title: "...", bullets: ["...", ...] }, ...] }
+// Leader `notes` field: free-form string shown at top of expanded card.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const data = {
+  leaders: [
+    {
+      name: "Hitler",
+      status: "firm",
+      papers: ["P2 Auth", "P3 WW2"],
+      notes: null,
+      historiography: "Intentionalist vs Structuralist; Kershaw, Bullock, Mommsen",
+      suboutlines: [
+        {
+          name: "Rise to Power",
+          children: [
+            {
+              name: "Conditions",
+              children: [
+                { name: "Economic unrest" },
+                { name: "Political instability" },
+                { name: "Social Division" },
+                { name: "Impact of War" },
+              ],
+            },
+            {
+              name: "Methods",
+              children: [
+                { name: "Charisma" },
+                { name: "Violence" },
+                { name: "Propaganda" },
+                { name: "Mistakes by Rivals" },
+                { name: "Ideology" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "Consolidation",
+          children: [
+            {
+              name: "Methods",
+              children: [
+                { name: "Legal methods" },
+                { name: "Force" },
+                { name: "Charisma" },
+                { name: "Propaganda" },
+              ],
+            },
+            { name: "Treatment of opposition" },
+            { name: "Effects of Foreign Policy" },
+          ],
+        },
+        {
+          name: "Aims and Results of Policies",
+          children: [
+            { name: "Foreign" },
+            { name: "Control" },
+            {
+              name: "Domestic",
+              children: [
+                { name: "Political" },
+                { name: "Economic" },
+                { name: "Sociocultural" },
+                { name: "Minorities and Women" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Mussolini",
+      status: "firm",
+      papers: ["P2 Auth"],
+      notes: null,
+      historiography: "De Felice's revisionism vs Bosworth; totalitarianism debate",
+      suboutlines: [
+        {
+          name: "Rise to Power",
+          children: [
+            {
+              name: "Conditions",
+              children: [
+                {
+                  name: "Economic unrest",
+                  content: [
+                    {
+                      title: "Agrarian Issues",
+                      bullets: [
+                        "Fascist Italy was characterised by a rapidly but unevenly industrialising society \u2014 the movement took hold in the rural hinterlands, not the industrial cities.",
+                        "Agricultural yields were uncompetitive; farmers shifted to cash crops such as sugar beet, causing Italy to import millions of tons of grain \u2014 leading to famine in 1919.",
+                        "Land distribution was deeply fractured: sharecroppers, free tenants, and early commercialised agriculture coexisted in conflict.",
+                        "Fascism exploited class conflicts between sharecroppers, small farmers, and landowners, promising to rectify agricultural chaos and fix famine.",
+                      ],
+                    },
+                    {
+                      title: "Hyperinflation & Economic Crisis",
+                      bullets: [
+                        "Over a century of expensive wars and debt from rapid industrialisation, the Italian state had accumulated enormous growing debt by 1913.",
+                        "Italy's wartime mobilisation relied on heavy printing and devaluing of the lira, creating 500% inflation.",
+                        "Italy mobilised 5 million soldiers, most of whom survived \u2014 immediately causing a gigantic unemployment crisis as millions re-entered the labour pool. 2 million unemployed.",
+                        "This produced the Two Red Years (Biennio Rosso), characterised by massive labour riots and strikes \u2014 upon which Fascism arose in reaction.",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "Political instability",
+                  content: [
+                    {
+                      title: "Biennio Rosso",
+                      bullets: [
+                        "The political environment immediately prior to the March on Rome was defined by the Biennio Rosso \u2014 a period of massive instability and socialist expansion.",
+                        "Socialist party membership exploded from 24,000 in 1918 to 216,337 by 1920. Trade unions grew from 600,000 to 2,200,000 in the same period.",
+                        "In 1919 elections the Socialists grew from 17.62% to 32.28%, winning a plurality and threatening to take power through democracy.",
+                        "Demobilised soldiers, radicalised by the war, were drawn to the Socialists as paramilitary elements \u2014 35 million work hours lost to organised union action.",
+                      ],
+                    },
+                    {
+                      title: "Parliamentary Inaction",
+                      bullets: [
+                        "The Liberal establishment, accustomed to ruling by decree, was woefully unequipped for mass politics after suffrage was recently introduced.",
+                        "They resorted to governing coalitions with the Catholics or Socialists \u2014 both of which were either unwilling or unable to provide stability.",
+                        "The Catholics sat in southern Italy; the Pope remained antagonised by events 50 years prior. The Socialists couldn't organise \u2014 radicals dissolved governments the moment they were elected.",
+                        "The Fascists, having some semblance of organisation, became one of the only parties the Liberals could actually form a viable coalition with.",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "Social Division",
+                  content: [
+                    {
+                      title: "Social Division",
+                      bullets: [
+                        "Social divisions were extremely prominent in deeply divided Italian society \u2014 notably the North-South divide and the secular-Catholic divide.",
+                        "Yet remarkably, they remained on the periphery of the unrest that characterised conditions during Mussolini's rise.",
+                        "While the northern half of the nation was in total uproar, the South remained near totally unaffected by the revolutionary tide \u2014 with the exception of Apulia.",
+                        "The Catholic-secular division also failed to ignite: the Catholics under the Pope chose to sit out the conflict rather than stoke the flames, despite joining politics in 1919.",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "Impact of War",
+                  content: [
+                    {
+                      title: "Impact of War",
+                      bullets: [
+                        "The March on Rome came in the aftermath of WWI, in which Italy was a massive combatant.",
+                        "Economically: Italy's wartime commitment relied on heavy printing and devaluing of the lira, creating 500% inflation. 2 million unemployed as demobilised soldiers re-entered the labour pool.",
+                        "Socially: more than half a million Italians died fighting, and many more were wounded.",
+                        "Politically: Italy gained little in post-war negotiations, stoking the 'mutilated victory' sentiment \u2014 exemplified by D'Annunzio's seizure of Fiume.",
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "Methods",
+              children: [
+                { name: "Charisma" },
+                {
+                  name: "Violence",
+                  content: [
+                    {
+                      title: "Violence & Squadrismo",
+                      bullets: [
+                        "The Fascist movement's rise is almost completely characterised by extraordinary violence \u2014 not unusual in the broader political climate.",
+                        "Founded as a reactionary 'combattimento' movement in response to massive socialist paramilitaries, the Fascists became a counter-socialist army in the rural hinterlands.",
+                        "The Squadristi took over the exact same coercive structures as the Socialists \u2014 electoral blocs, labour councils \u2014 just rebranded under a Fascist banner.",
+                        "The movement became so defined by violence that all semblance of coherent ideology was lost \u2014 a loose organisation of anti-socialists under a nominally Fascist name.",
+                        "The March on Rome itself \u2014 Mussolini's appointment as Prime Minister \u2014 was carried out by marching 40,000 Squadristi on the capital.",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "Propaganda",
+                  content: [
+                    {
+                      title: "Propaganda",
+                      bullets: [
+                        "Mussolini began his career as a newspaper editor, commanding Avanti! \u2014 the newspaper of the Italian Socialists \u2014 before breaking with them.",
+                        "After founding the Fascists, he established Il Popolo d'Italia, a major propaganda organ used to extol Fascism and fearmonger about Soviet Bolshevism.",
+                        "Propaganda served as an amplifier of the Fascist machine \u2014 presenting a ragtag paramilitary as an organised, disciplined force.",
+                        "This convinced Giolitti, the Pope, and the King himself that the Fascists were a credible governing force \u2014 directly enabling the March on Rome.",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "Mistakes by Rivals",
+                  content: [
+                    {
+                      title: "Mistakes by Rivals",
+                      bullets: [
+                        "Fascism found its political niche by appearing slightly more competent than every other faction.",
+                        "The Socialists kept bragging about revolutionary change with no real results \u2014 unduly frightening the establishment while antagonising their own base.",
+                        "The Communists split the left's voter base by establishing the PCI \u2014 handing the Fascists a structural advantage.",
+                        "The monarchy capitulated to Mussolini with almost no resistance, based on undue fears of socialist revolution.",
+                        "The Catholics failed to act, and the Pope withdrew support from his own political party \u2014 letting the Fascists roll straight over them.",
+                        "The Liberals, unable to govern alone, needed a coalition partner with some organisational coherence \u2014 only the Fascists fit that description.",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "Ideology",
+                  content: [
+                    {
+                      title: "Ideology",
+                      bullets: [
+                        "The Fascist ideology was broadly defined by its lack of a coherent doctrine \u2014 which proved to be its greatest political strength.",
+                        "Built on palingenetic ultranationalism incorporating Mazzinism, it appealed to virtually every Italian in some way.",
+                        "It exploited discontent with Versailles and the 'mutilated victory', drawing on aesthetic visions of a revitalised Italy recalling the glory of Rome.",
+                        "Fundamentally opportunistic: Mussolini changed his positions constantly \u2014 shifting from left-wing radicalism to agrarianism to conservatism.",
+                        "This drew together syndicalists, futurists, farmers, landowners, soldiers, officers, and former socialists under one banner.",
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "Consolidation",
+          children: [
+            {
+              name: "Methods",
+              children: [
+                { name: "Legal methods" },
+                { name: "Force" },
+                { name: "Charisma" },
+                { name: "Propaganda" },
+              ],
+            },
+            { name: "Treatment of opposition" },
+            { name: "Effects of Foreign Policy" },
+          ],
+        },
+        {
+          name: "Aims and Results of Policies",
+          children: [
+            { name: "Foreign" },
+            { name: "Control" },
+            {
+              name: "Domestic",
+              children: [
+                { name: "Political" },
+                { name: "Economic" },
+                { name: "Sociocultural" },
+                { name: "Minorities and Women" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Castro",
+      status: "firm",
+      papers: ["P2 Auth", "P2 CW", "P3 LatAm", "P3 CW Americas"],
+      notes: null,
+      historiography: "Revisionist vs orthodox on revolution's character; Szulc, Quirk, Sweig",
+      suboutlines: [
+        {
+          name: "Rise to Power",
+          children: [
+            {
+              name: "Conditions",
+              children: [
+                { name: "Economic unrest" },
+                { name: "Political instability" },
+                { name: "Social Division" },
+                { name: "Impact of War" },
+              ],
+            },
+            {
+              name: "Methods",
+              children: [
+                { name: "Charisma" },
+                { name: "Guerilla Warfare" },
+                { name: "Propaganda" },
+                { name: "Mistakes by Rivals" },
+                { name: "Ideology" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "Consolidation",
+          children: [
+            {
+              name: "Methods",
+              children: [
+                { name: "Legal methods" },
+                { name: "Force" },
+                { name: "Charisma" },
+                { name: "Propaganda" },
+              ],
+            },
+            { name: "Treatment of opposition" },
+            { name: "Effects of Foreign Policy" },
+          ],
+        },
+        {
+          name: "Aims and Results of Policies",
+          children: [
+            { name: "Foreign" },
+            { name: "Control" },
+            {
+              name: "Domestic",
+              children: [
+                { name: "Political" },
+                { name: "Economic" },
+                { name: "Sociocultural" },
+                { name: "Minorities and Women" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Truman",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      notes: null,
+      historiography: "Orthodox (Soviet aggression) vs Revisionist (US economic imperialism) vs Post-revisionist; Gaddis, Williams, Leffler",
+      suboutlines: [
+        {
+          name: "Aims & Results of Foreign Policy",
+          content: [
+            {
+              title: "Conferences & Postwar Antagonism",
+              bullets: [
+                "Truman's foreign policy immediately succeeding Roosevelt marked a sharp turnaround \u2014 from cooperative wartime alliance to confrontation.",
+                "At Potsdam, an initially warm meeting deteriorated; Truman went tough on the Soviets, culminating in a heated confrontation with Molotov.",
+                "By 1946, following the Long Telegram and Churchill's Iron Curtain speech, Truman moved the US into formal opposition to the Soviet Union.",
+                "The 1947 Truman Doctrine formally broke down the Grand Alliance, outlining US opposition to Soviet expansion globally.",
+                "Truman backed the creation of Israel, being the first to recognise the nascent state \u2014 aggravating the Arabs and adding a further regional flashpoint.",
+              ],
+            },
+            {
+              title: "Containment, Marshall Plan, NATO & Berlin Blockade",
+              bullets: [
+                "The Truman Doctrine pledged support for pro-Western governments of Greece and Turkey \u2014 the first concrete application of containment.",
+                "The Marshall Plan (1947) aimed to establish political and economic stability in Europe, reducing the attraction of communism.",
+                "Truman led the push for unification of British and American occupation zones into Bizonia (1948), then Trizonia with France \u2014 forming West Germany in 1949.",
+                "The Soviets responded with the Berlin Blockade \u2014 the first major Cold War crisis. Stalin ultimately backed down, but no compromise on Germany was reached.",
+                "NATO (1949) was formed as a defensive bloc against the Soviet Union, directly in response to the Czechoslovakian coup and the Berlin crisis.",
+              ],
+            },
+            {
+              title: "China, Soviet Bomb & Korea",
+              bullets: [
+                "By 1949 the communists had forced the Nationalists off the mainland \u2014 a second breach of containment after Czechoslovakia.",
+                "The Soviet Union broke the American nuclear monopoly, countermanding Truman's proposal for UN-supervised nuclearisation.",
+                "In response, Truman passed NSC-68, massively re-expanding military expenditure and political powers in relation to the military \u2014 ending four years of demilitarisation.",
+                "NSC-68 and the National Security Council stoked domestic fervour and anti-communist sentiment \u2014 directly enabling McCarthyism and the Red Scare.",
+                "The invasion of South Korea by Kim Il-Sung led Truman to commit to total war \u2014 stopping another breach of containment at any cost.",
+              ],
+            },
+            {
+              title: "Containment in Latin America",
+              bullets: [
+                "Focused on military alliances and keeping communism out \u2014 the Rio Treaty (1947) designed to prevent revolutionary states from emerging.",
+                "The 1951 Mutual Security Act authorised military aid to 8 countries including Brazil, Chile, and Batista's Cuba.",
+                "Continued to support American-backed strongmen \u2014 Batista, Somoza, Trujillo \u2014 to prevent the emergence of communist states.",
+                "OAS (Organisation of American States) established as a framework for regional solidarity against communism.",
+                "Extremely minimal economic aid: $22 million to Latin America vs. $1.6 billion to Europe.",
+                "Covert activities conducted in Brazil, Mexico, and Cuba against ostensibly communist or left-wing agitators.",
+              ],
+            },
+          ],
+        },
+        { name: "Results of Domestic Policy" },
+      ],
+    },
+    {
+      name: "Eisenhower",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      notes: null,
+      historiography: "Eisenhower revisionism (hidden-hand presidency); Ambrose, Immerman",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+      ],
+    },
+    {
+      name: "Khrushchev",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Taubman, Zubok; debate on sincerity of peaceful coexistence",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
+      ],
+    },
+    {
+      name: "Kennedy",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      notes: null,
+      historiography: "Camelot myth vs revisionism; Freedman on CMC, Rabe on Latin America",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
+      ],
+    },
+    {
+      name: "Johnson",
+      status: "firm",
+      papers: ["P3 CW Americas"],
+      notes: null,
+      historiography: "Logevall on missed off-ramps; credibility gap debate",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+      ],
+    },
+    {
+      name: "Nixon",
+      status: "firm",
+      papers: ["P3 CW Americas", "P2 CW"],
+      notes: null,
+      historiography: "Dallek, Hanhim\u00e4ki on d\u00e9tente; debate on realism vs cynicism",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+      ],
+    },
+    {
+      name: "Reagan",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Triumphalist vs revisionist on Cold War ending; Fischer, Garthoff",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+      ],
+    },
+    {
+      name: "Gorbachev",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Brown on Gorbachev's agency; Kotkin on structural collapse; Zubok",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
+      ],
+    },
+    {
+      name: "Allende",
+      status: "firm",
+      papers: ["P3 LatAm", "P3 CW Americas"],
+      notes: null,
+      historiography: "Kornbluh (declassified docs); debate on internal vs external causes of failure",
+      suboutlines: [
+        { name: "Aims and Results of Policies" },
+        { name: "Failure of Democracy" },
+        { name: "Rise to power" },
+        { name: "Treatment of Opposition" },
+      ],
+    },
+    {
+      name: "Pinochet",
+      status: "firm",
+      papers: ["P3 LatAm"],
+      notes: null,
+      historiography: "Constable & Valenzuela; Harmer on Cold War dimension; memory politics",
+      suboutlines: [
+        { name: "Rise to power" },
+        { name: "Treatment of opposition" },
+        { name: "Aims and results of policies" },
+      ],
+    },
+    {
+      name: "Goulart",
+      status: "firm",
+      papers: ["P3 LatAm"],
+      notes: null,
+      historiography: "Green on US involvement; Skidmore on Brazilian politics",
+      suboutlines: [
+        { name: "Aims and Results of policies" },
+        { name: "Failure of Democracy" },
+      ],
+    },
+    {
+      name: "Brezhnev",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Zubok, Westad; debate on whether d\u00e9tente was genuine or tactical",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+      ],
+    },
+    {
+      name: "De Gaulle",
+      status: "provisional",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Lacouture; Cold War multipolarity",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
+      ],
+    },
+    {
+      name: "Adenauer",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Schwarz; debate on Adenauer\u2019s agency vs structural constraints",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
+      ],
+    },
+  ],
+  crises: [
+    {
+      name: "Korean War",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      causes: [
+        {
+          title: "Korean War as a Civil War",
+          bullets: [
+            "The origins of the Cold War itself were internally driven by conflicts between the divided Koreas.",
+            "Although the division was a result of superpower rivalries, by 1950 the two Koreas were pretty much autonomous states from their backers.",
+            "Both Koreas, under nationalist strongmen (Syngman Rhee, Kim Il Sung), were pushing heavy rhetoric for reunification under their respective states.",
+            "Between 1948 and 1950, border conflicts had already escalated to major skirmishes between both states.",
+            "The North Korean action can be clearly attributed to the personal desires of Kim Il Sung, rather than the Soviet Union, as Kim petitioned for invasion multiple times with Stalin refusing, and Stalin only agreed reluctantly, refusing to commit forces.",
+            "This is further evidenced by Kim Il Sung\u2019s domestic justification of the war, as induced by domestic weakness and uprising in Rhee\u2019s Korea.",
+            "Kim Il Sung saw the Japanese-dominated Rhee Korea as weak/illegitimate.",
+            "Therefore, the Korean War was a domestic phenomenon that expanded.",
+          ],
+        },
+        {
+          title: "American Escalation",
+          bullets: [
+            "However, the civil war itself was not necessarily a Cold War crisis, until South Korea\u2019s superpower backer, the United States got involved \u2014 escalating the war to a true Cold War crisis.",
+            "This escalation entailed the deployment of 1.8 million troops to Korea, a 4-fold expansion of US military budget, the movement of US naval forces, and massive bombing campaigns by the USAF, escalating the war to total war, and even potentially nuclear war.",
+            "Such action was taken under the broader framework of containment, as a response to the perceived domino theory in the opening stages of the Cold War, especially after the loss of China and the Soviet nuclear tests, both events only mere months earlier.",
+            "Moreover, it was further driven by domestic factors in the United States.",
+            "Senator Joseph McCarthy began his relentless attack months earlier.",
+            "Truman already unpopular after losing China, therefore had to respond otherwise his administration would be in the gutter.",
+            "Hence, the Korean War as a crisis can be characterised as caused by the rising nascent Cold War tensions, especially in the United States.",
+          ],
+        },
+        {
+          title: "Chinese and Soviet Involvement",
+          bullets: [
+            "Yet the Chinese response \u2014 which was to march millions across the Yalu \u2014 was not a given, as the Korean War was the first Cold War proxy war.",
+            "Where the American involvement can be clearly attributed to Cold War tensions, the Chinese response is more characteristic of Chinese domestic goals.",
+            "From a Chinese perspective, the American intervention threatened China, especially with Douglas MacArthur\u2019s bombing of Chinese territory (Yalu River) and threats of nuclear weapons.",
+            "Moreover, it gave the Chinese government an opportunity to consolidate domestic power, by sending former KMT veterans to Korea, and spurring nationalist sentiment through the foreign war.",
+            "Additionally, it came as a result of Chinese historical and contemporary alliance with North Korea, which further drove the Chinese to support their ally.",
+            "This independent motivation for Chinese involvement is further evidenced by the lack of Soviet response, aside from Soviet airmen.",
+            "Therefore, the Korean War cannot be fully characterised by Cold War tensions, given the individual motivations of China as a third power.",
+          ],
+        },
+      ],
+      impact: [
+        {
+          title: "Trends for Superpower Rivalry",
+          bullets: [
+            "Prior to the Korean War, although the United States and the Soviet Union were opposed on several issues, especially China, they saw no actual conflict.",
+            "The Korean War represented the first instance where Soviet troops (airmen) fought against their former American allies.",
+            "It brought both powers closer to the nuclear brink, after MacArthur\u2019s threats and the Soviet response.",
+            "In many ways it represents the true beginning of the Cold War \u2014 where the Cold War was escalated by the rapid militarisation of both superpowers, and brought across the world from the postwar European ideological battleground.",
+            "Stalin sends 17,362 rifles and carbines, 5,816 sub-machine-guns, 268 mortars and 234 artillery pieces.",
+            "Led to West German rearmament under Pleven Plan/European Defence Community, viewed as essential to strengthen the defences of western Europe (but was limited, only allowed battalions not divisions).",
+            "Set the trend of a weak UN \u2014 only 10% of troops came from the UN. USSR basically crippled the Security Council after this incident.",
+          ],
+        },
+        {
+          title: "Domestic Results in the US",
+          bullets: [
+            "Reversed the postwar demilitarisation, especially the peace dividend \u2014 increased US military spending from $13bn to $50bn, NSC-68 taken seriously \u2192 military-industrial complex becomes a key political power in domestic US politics.",
+            "Draft reintroduced, US defence policy began to take an active role, military bases around the world in all theatres.",
+            "Supercharged anticommunism, red scare, McCarthyism became overwhelmingly dominant force; containment and intervention became supported bipartisan.",
+            "HUAC, Rosenberg trials during Korean War.",
+            "Eroded congressional power, as Truman declared war through police action, yet Truman himself loses political favour to MacArthur, paved the way for a Republican presidency (popularity plummeted to around 25%).",
+            "Stimulated American economy, massive spending, accelerated desegregation in the military as mixed units fought together, expanded GI Bill effects \u2192 inflationary 20% inflation at start of war, controlled by government intervention (Revenue Act of 1951, price controls).",
+            "The heavy-handed economic approach was not popular, hence led to Eisenhower\u2019s brinksmanship and New Look.",
+          ],
+        },
+        {
+          title: "Effect on the Koreas",
+          bullets: [
+            "More bombs dropped on the Koreas than during the entire Pacific War on Japan.",
+            "Korea gets permanently divided along the 38th parallel and a Demilitarised Zone is set up.",
+            "Up to 5 million people died (600k Chinese, 50k American, and a lot of Koreans).",
+            "Left South Korea as one of the poorest nations in the world \u2014 1953 per-capita production at 44% below 1940 levels.",
+            "Eliminated North Korea\u2019s industrial base. By 1953, 44% of factory buildings and 42% of production facilities were in ruins.",
+          ],
+        },
+      ],
+      leaderLinks: ["Truman", "Eisenhower", "Khrushchev"],
+      leaderContent: [
+        {
+          name: "Truman",
+          bullets: [
+            "Underlying American involvement in the Korean War is Truman\u2019s policy of containment.",
+            "After the massive failure in containment that China represented, Korea was the next on the list and here, we saw Truman stop accepting the loss of states to communism, reacting extremely.",
+            "Domestically, this represents a significant turnaround, where Truman steered America in the opposite direction from demilitarisation and the peace dividend to entering the Cold War.",
+          ],
+        },
+      ],
+    },
+    {
+      name: "Suez Crisis",
+      status: "firm",
+      papers: ["P2 CW"],
+      causes: "Nasser\u2019s nationalisation of canal; Anglo-French-Israeli collusion; Cold War competition in Middle East; decolonisation context",
+      impact: "Humiliation of Britain/France; US/USSR as true superpowers confirmed; precedent for Cold War in Middle East; non-alignment strengthened",
+      leaderLinks: ["Eisenhower", "Khrushchev"],
+      leaderContent: null,
+    },
+    {
+      name: "Cuban Missile Crisis",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      causes: [
+        {
+          title: "Castro\u2019s Cuba",
+          bullets: [
+            "In some ways, the Cuban Missile Crisis was very much centred around Castro\u2019s Cuba, and its tenuous relations with the United States, and less so the Soviet Union\u2019s backing.",
+            "By the time of the crisis, the nascent Cuban state was only 3 years old.",
+            "It was beset by enemies within, loyalists to the old regime, along with other dissidents.",
+            "Additionally, a belligerent Castro had antagonised the United States, leading to the Bay of Pigs invasion \u2014 a US-backed invasion by Cuban exiles, and Operation Mongoose.",
+            "This was compounded by nationalisations of US property on the Cuban side, and oil embargo + sanctions from the American side.",
+            "For Castro\u2019s Cuba, it represents a final reaction to the Bay of Pigs, where the previously at least on the surface ambivalent revolutionary government chose the communist camp as a means of protection and stability.",
+            "This is indeed evidenced by Cuba\u2019s proactive role in the crisis \u2014 Cuba requesting the missiles, Cuba requesting escalation, and Castro himself even requesting nuclear exchange.",
+          ],
+        },
+        {
+          title: "United States",
+          bullets: [
+            "Yet, the Cuban Missile Crisis is after all triggered by the American response to the missiles.",
+            "Such can be traced back earlier to Eisenhower\u2019s New Look and nuclear brinkmanship, along with the Dulles brothers.",
+            "As head of the CIA, the younger Dulles orchestrated the Bay of Pigs invasion, with Kennedy\u2019s very reluctant approval.",
+            "As Secretary of State, the elder Dulles was behind the installation of missiles in Turkey and Italy, and the massive expansion of the US nuclear program under massive retaliation, maintaining a near 20:1 ratio over bombs over the Soviet Union.",
+            "This can broadly be examined as a period of American belligerency, where in succession we have the U2 incident, installation of missiles thereafter, and finally the Soviet reaction here.",
+            "The events of the crisis further indicate US belligerency, where the US committed an act of war against Cuba (the blockade), escalated \u2014 despite the Soviet installation only representing a response in kind by the Soviet Union.",
+          ],
+        },
+        {
+          title: "Soviet Union",
+          bullets: [
+            "However, the Cuban Missile Crisis can also be attributed to the Soviet Union finally dropping peaceful coexistence.",
+            "As discussed earlier, the crisis occurred with the backdrop of the U2 incident, which put a halt to increasing d\u00e9tente.",
+            "Moreover, it came following the unresolved Berlin crisis, and increasing influence of Soviet hardliners.",
+            "The actions taken by the Soviet Union, albeit responding in kind, represent the nullification of peaceful coexistence.",
+            "By supporting Cuba with nuclear weapons, the Soviet Union was clearly seeking to expand its influence to Latin America, moving into the US\u2019s backyard \u2014 Monroe Doctrine.",
+            "Moreover, the nuclear weapons represent a Soviet shift to brinkmanship as well, further escalating tensions.",
+            "Therefore, it cannot singularly be characterised in reference to superpower rivalries as an American move, as it was also a conscious Soviet move to escalate rising tensions.",
+          ],
+        },
+      ],
+      impact: [
+        {
+          title: "Superpower Rivalries & Tensions",
+          bullets: [
+            "Fortunately, the Cuban Missile Crisis ended in de-escalation \u2014 both the Soviet Union and the United States backed down, to the irritation of Fidel Castro.",
+            "Hence, the impacts of the crisis are largely characterised by d\u00e9tente between the two powers, moving away from brinkmanship \u2014 especially the nuclear kind.",
+            "In 1963, the Moscow\u2013Washington hotline was established, allowing for faster de-escalation of budding crises.",
+            "This was shortly followed by the Partial Nuclear Test Ban, committed to bring the world further away from the brink.",
+            "Moreover, it signalled a new phase of the Cold War, where the concept of MAD entered the forefront, moving away from direct confrontation towards proxy conflicts.",
+            "Additionally, it strengthened the non-aligned movement, especially those not under a nuclear umbrella.",
+          ],
+        },
+        {
+          title: "For the USSR",
+          bullets: [
+            "Embarrassed Khrushchev \u2014 two failures in a row (Berlin prior), as the results were terrible for the Soviet Union: publicly, the Soviets backed down with no results.",
+            "This was because the removal of American missiles from Italy and Turkey was secret, along with the promises secured on Cuba\u2019s behalf.",
+            "It further weakened the Soviet Union\u2019s prestige in the communist bloc, especially with China, accelerating China as a third power and the Sino-Soviet split.",
+            "As a response, the Soviets began massive nuclear expansion, attempting to reach true parity while the US backed away from brinkmanship.",
+            "Although de-escalating, the Soviet Union gave up on peaceful coexistence henceforth, as its proponent was ousted \u2014 Khrushchev couped in 1964.",
+          ],
+        },
+        {
+          title: "For the United States",
+          bullets: [
+            "Domestically and internationally, the Cuban Missile Crisis was seen as a massive success for the United States, where the Soviet Union was forced to back down once again (again secret agreements).",
+            "Moreover, it confirmed shifting American doctrine, where the importance of conventional engagement was once again reemphasised.",
+            "Additionally, it gave credence to a new (or really old) form of \u201ccheap\u201d intervention, where gunboat diplomacy was once again reestablished as an easy, cost-effective means of dealing with crises.",
+            "These lessons would be employed heavily in Latin America and elsewhere, curbing further communist encroachments \u2014 Operation Brother Sam 1964, Dominican Republic 1965, and the Gulf of Tonkin incident triggering the Vietnam War.",
+            "Reinforced belief in containment at least in the Americas along with Monroe Doctrine.",
+            "Conversely, public feared nuclearisation and America halted nuclear brinkmanship.",
+          ],
+        },
+        {
+          title: "For Cuba",
+          bullets: [
+            "Gained a formal US pledge to not invade, which the US has followed to this date.",
+            "However, covert operations were unaffected \u2014 Operation Mongoose continued, along with sanctions and blockade.",
+            "Worsened Cuban-Soviet relations \u2014 Cuba was excluded from the negotiations, yet Cuba still dependent as the Western bloc drew away.",
+            "Cuba gained prestige, seen as being able to fend off the United States, especially amongst other communist states and the non-aligned movement.",
+            "Stabilised the nascent regime, allowing Cuba to deal with domestic issues and consolidate power.",
+          ],
+        },
+      ],
+      leaderLinks: ["Kennedy", "Khrushchev", "Castro"],
+      leaderContent: [
+        {
+          name: "Castro",
+          bullets: [
+            "Castro\u2019s involvement with the Cuban Missile Crisis is largely the same as the Cuban state \u2014 after all he was the authoritarian leader of the Cuban state.",
+            "Castro directly instigated most of the events, personally requesting the nuclear missiles, requesting first strike in the event of American invasion, and he commanded the downing of an American U2.",
+            "However, he was sidelined once it escalated to a superpower crisis, excluded from both the escalation and negotiations.",
+            "Yet arguably, he came out on top as a result of the crisis \u2014 a successful foreign policy result, aiding domestic consolidation.",
+            "He earned significant prestige for both himself and the state, staved off American invasion, earned Cuba a strong Soviet backer who would bankroll the state.",
+          ],
+        },
+        {
+          name: "Khrushchev",
+          bullets: [
+            "In contrast, Khrushchev\u2019s involvement with the Cuban Missile Crisis is somewhat detached from the Soviet Union\u2019s policies and response.",
+            "The motivations for the response he steered can be attributed in part to the severe loss of domestic prestige over the perceived blunder in Berlin, and the resultant undermining of his political base.",
+            "Moreover, it represents a significant shift in his doctrine, going against his policy of peaceful coexistence.",
+            "Arguably, his management of the crisis represented several blunders, overestimating Soviet capabilities and ultimately facing another humiliation, in addition to losing control over on-the-ground commanders, risking nuclear war.",
+            "The impact of the crisis largely fell on his shoulders, devastating his prestige and leading to his ouster 2 years later, yet he also demonstrated true commitment to his policy/principle, backing down \u2014 another failure in his foreign policy.",
+          ],
+        },
+        {
+          name: "Kennedy",
+          bullets: [
+            "With regards to the crisis, Kennedy played the role of the responder, as opposed to the instigators \u2014 the instigation by the US was done by his predecessors and Dulles.",
+            "Kennedy himself represented a turnaround in US doctrine, a more d\u00e9tente-oriented president as opposed to the hawks of Truman and Eisenhower.",
+            "As such, the Cuban Missile Crisis served as a test of Kennedy and his new doctrine, especially with US midterm elections ready to respond to the test.",
+            "Here Kennedy chose to de-escalate, both with the Soviet Union, and thereafter with Cuba, keeping with his promise to not invade.",
+            "Kennedy\u2019s response can be characterised as highly successful, where he successfully de-escalated the crisis, refraining from nuclear or otherwise military response \u2014 a successful centrepiece of his foreign policy as president.",
+          ],
+        },
+      ],
+    },
+    {
+      name: "Vietnam War",
+      status: "firm",
+      papers: ["P3 CW Americas", "P2 CW"],
+      causes: "Containment logic; domino theory; French withdrawal; Gulf of Tonkin; credibility politics; gradual escalation across presidencies",
+      impact: "US domestic upheaval (anti-war, credibility gap, War Powers Act); Nixon Doctrine; Canadian/Latin American reactions; d\u00e9tente context; lessons for interventionism",
+      leaderLinks: ["Eisenhower", "Kennedy", "Johnson", "Nixon"],
+      leaderContent: null,
+    },
+    {
+      name: "Afghanistan",
+      status: "firm",
+      papers: ["P2 CW"],
+      causes: "Soviet intervention to prop up communist government; Cold War proxy logic; Brezhnev Doctrine applied; mujahideen resistance",
+      impact: "Collapse of d\u00e9tente; US backing of mujahideen (Reagan Doctrine); Soviet military overextension; accelerant of USSR\u2019s internal deterioration; Cold War\u2019s end",
+      leaderLinks: ["Brezhnev", "Reagan", "Gorbachev"],
+      leaderContent: null,
+    },
+  ],
+  developments: {
+    interwar: {
+      title: "Interwar Period & Hemispheric Reactions",
+      papers: ["P3 WW2", "P3 LatAm"],
+      items: [
+        {
+          name: "Hemispheric Cooperation & Inter-American Diplomacy",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Good Neighbor Policy",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+      ],
+    },
+    ww2: {
+      title: "Second World War",
+      papers: ["P3 WW2", "P3 CW Americas"],
+      items: [
+        {
+          name: "American entry to the war",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Extent and reasons for involvement",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Impact of the war",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Women & Minorities in the Americas",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Atomic Bomb \u2013 causes and significance",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+      ],
+    },
+    coldWarOrigins: {
+      title: "Origins of Cold War",
+      papers: ["P2 CW", "P3 CW Americas", "P3 LatAm"],
+      items: [
+        {
+          name: "Fear, Aggression, and Ideological Differences",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Treatment of Germany / German Question",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Conferences (Yalta, Potsdam)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Sovietisation of Eastern Europe",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Containment and Latin America",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "McCarthyism and the Red Scare",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+      ],
+    },
+    crisisDetente: {
+      title: "Crisis & D\u00e9tente during Cold War",
+      papers: ["P2 CW", "P3 CW Americas", "P3 LatAm"],
+      items: [
+        {
+          name: "Globalisation of the Cold War \u2013 reasons",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Sino-Soviet Split",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Sino-American Rapprochement",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Peaceful Coexistence",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Failure of D\u00e9tente",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Effects of Korean War",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Effects of Vietnam",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Regional Cooperation in Latin America (Cold War era)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Liberation Theology",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+      ],
+    },
+    endOfColdWar: {
+      title: "End of Cold War",
+      papers: ["P2 CW", "P3 CW Americas", "P3 LatAm"],
+      items: [
+        {
+          name: "Arms Race",
+          status: "standalone (short)",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Fall of Communism in Eastern Europe (as CAUSE)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Collapse of Communism in Eastern Europe and USSR (as IMPACT)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+      ],
+    },
+  },
+};
+
+// ─── SYLLABUS DATA ────────────────────────────────────────────────────────────
+const syllabus = [
+  {
+    paper: "P2 Auth",
+    title: "Authoritarian States",
+    points: [
+      {
+        text: "Conditions in which authoritarian states emerged: economic factors; social division; impact of war; weakness of political system",
+        links: { leaders: ["Hitler", "Mussolini", "Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Methods used to establish authoritarian states: persuasion and coercion; the role of leaders; ideology; the use of force; propaganda",
+        links: { leaders: ["Hitler", "Mussolini", "Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Consolidation and maintenance of power: use of legal methods; use of force; charismatic leadership; dissemination of propaganda; nature, extent and treatment of opposition",
+        links: { leaders: ["Hitler", "Mussolini", "Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "The impact of the success and/or failure of foreign policy on the maintenance of power",
+        links: { leaders: ["Hitler", "Mussolini", "Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Aims and results of policies: aims and impact of domestic economic, political, cultural and social policies; the impact of policies on women and minorities",
+        links: { leaders: ["Hitler", "Mussolini", "Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Authoritarian control and the extent to which it was achieved",
+        links: { leaders: ["Hitler", "Mussolini", "Castro"], crises: [], developments: [] },
+      },
+    ],
+  },
+  {
+    paper: "P2 CW",
+    title: "Cold War Superpower",
+    points: [
+      {
+        text: "Rivalry, mistrust and accord",
+        links: { leaders: ["Truman", "Eisenhower", "Khrushchev", "Kennedy", "Nixon", "Brezhnev", "Reagan", "Gorbachev"], crises: ["Korean War", "Cuban Missile Crisis", "Vietnam War", "Afghanistan"], developments: ["Fear, Aggression, and Ideological Differences", "Treatment of Germany / German Question", "Conferences (Yalta, Potsdam)", "Sovietisation of Eastern Europe", "Globalisation of the Cold War \u2013 reasons", "Sino-Soviet Split", "Sino-American Rapprochement", "Peaceful Coexistence", "Failure of D\u00e9tente", "Effects of Korean War", "Effects of Vietnam", "Arms Race", "Fall of Communism in Eastern Europe (as CAUSE)", "Collapse of Communism in Eastern Europe and USSR (as IMPACT)"] },
+      },
+      {
+        text: "The breakdown of the Grand Alliance and the emergence of superpower rivalry in Europe and Asia (1943\u20131949): role of ideology; fear and aggression; economic interests; a comparison of the roles of the US and the USSR",
+        links: { leaders: ["Truman"], crises: [], developments: ["Fear, Aggression, and Ideological Differences", "Conferences (Yalta, Potsdam)", "Sovietisation of Eastern Europe"] },
+      },
+      {
+        text: "The US, USSR and China \u2014 superpower relations (1947\u20131979): containment; peaceful co-existence; Sino-Soviet and Sino-US relations; d\u00e9tente",
+        links: { leaders: ["Truman", "Eisenhower", "Khrushchev", "Kennedy", "Nixon", "Brezhnev"], crises: ["Korean War", "Cuban Missile Crisis"], developments: ["Sino-Soviet Split", "Sino-American Rapprochement", "Peaceful Coexistence"] },
+      },
+      {
+        text: "Reasons for the end of the Cold War (1980\u20131991): ideological challenges and dissent; economic problems; arms race",
+        links: { leaders: ["Reagan", "Gorbachev", "Brezhnev"], crises: ["Afghanistan"], developments: ["Arms Race", "Fall of Communism in Eastern Europe (as CAUSE)"] },
+      },
+      {
+        text: "The impact of two leaders, each from a different region, on the course and development of the Cold War",
+        links: { leaders: ["Khrushchev", "Kennedy", "Castro", "Adenauer", "De Gaulle", "Brezhnev", "Reagan", "Gorbachev"], crises: [], developments: [] },
+      },
+      {
+        text: "The economic, social and cultural impact of the Cold War on two countries, each from a different region",
+        links: { leaders: ["Adenauer", "De Gaulle", "Castro", "Allende"], crises: [], developments: ["Effects on two other countries"] },
+      },
+      {
+        text: "Cold War crises: detailed study of any two crises from different regions \u2014 causes, impact and significance",
+        links: { leaders: [], crises: ["Korean War", "Suez Crisis", "Cuban Missile Crisis", "Vietnam War", "Afghanistan"], developments: [] },
+      },
+    ],
+  },
+  {
+    paper: "P3 WW2",
+    title: "The Second World War and the Americas (1933\u20131945)",
+    points: [
+      {
+        text: "Hemispheric reactions to events in Europe and Asia: inter-American diplomacy; cooperation and neutrality; Franklin D Roosevelt\u2019s Good Neighbor policy\u2014its application and effects",
+        links: { leaders: [], crises: [], developments: ["Hemispheric Cooperation & Inter-American Diplomacy", "Good Neighbor Policy"] },
+      },
+      {
+        text: "Involvement and participation of any two countries of the Americas in the Second World War",
+        links: { leaders: [], crises: [], developments: ["Extent and reasons for involvement"] },
+      },
+      {
+        text: "Social impact of the Second World War; impact on women and minorities; conscription; treatment of Japanese Americans, Japanese Latin Americans and Japanese Canadians",
+        links: { leaders: [], crises: [], developments: ["Women & Minorities in the Americas"] },
+      },
+      {
+        text: "Reasons for, and significance of, the use of atomic weapons against Japan",
+        links: { leaders: [], crises: [], developments: ["Atomic Bomb \u2013 causes and significance"] },
+      },
+      {
+        text: "Economic and diplomatic effects of the Second World War in any two countries of the Americas",
+        links: { leaders: [], crises: [], developments: ["Impact of the war"] },
+      },
+    ],
+  },
+  {
+    paper: "P3 LatAm",
+    title: "Political Developments in Latin America (1945\u20131980)",
+    points: [
+      {
+        text: "The Cuban Revolution: political, social and economic causes",
+        links: { leaders: ["Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Rule of Fidel Castro: Cuban nationalism; political, economic, social and cultural policies; treatment of opposition; successes and failures; impact on the region",
+        links: { leaders: ["Castro"], crises: ["Cuban Missile Crisis"], developments: [] },
+      },
+      {
+        text: "Populist leaders in two countries: rise to power and legitimacy; ideology; social, economic and political policies; successes and failures; the treatment of opposition",
+        links: { leaders: ["Goulart", "Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Democracy in crisis: political, social and economic reasons for the failure of elected leaders",
+        links: { leaders: ["Allende", "Goulart"], crises: [], developments: [] },
+      },
+      {
+        text: "Rise of a military dictatorship in one country: reasons for their rise to power; economic and social policies; repression and treatment of opposition",
+        links: { leaders: ["Pinochet"], crises: [], developments: [] },
+      },
+      {
+        text: "Guerrilla movements in one country: origins, rise and consequences",
+        links: { leaders: ["Castro"], crises: [], developments: [] },
+      },
+      {
+        text: "Liberation theology in Latin America: origins, growth and impact",
+        links: { leaders: [], crises: [], developments: ["Liberation Theology"] },
+      },
+    ],
+  },
+  {
+    paper: "P3 CW Americas",
+    title: "The Cold War and the Americas",
+    points: [
+      {
+        text: "Truman: containment and its implications for the Americas; the rise of McCarthyism and its effects; social and cultural impact of the Cold War on the Americas",
+        links: { leaders: ["Truman"], crises: [], developments: ["McCarthyism and the Red Scare", "Containment on Latin America"] },
+      },
+      {
+        text: "Korean War, the United States and the Americas: reasons for participation; military developments; diplomatic and political outcomes",
+        links: { leaders: ["Truman", "Eisenhower"], crises: ["Korean War"], developments: [] },
+      },
+      {
+        text: "Eisenhower and Dulles: New Look and its application; characteristics and reasons for the policy; short-term and long-term impact on the region",
+        links: { leaders: ["Eisenhower"], crises: ["Suez Crisis"], developments: [] },
+      },
+      {
+        text: "United States\u2019 involvement in Vietnam: reasons for involvement at different stages; domestic effects; Canadian non-support; Latin American protest",
+        links: { leaders: ["Eisenhower", "Kennedy", "Johnson", "Nixon"], crises: ["Vietnam War"], developments: ["Effects of Vietnam"] },
+      },
+      {
+        text: "US foreign policies from Kennedy to Carter: characteristics, reasons for, and successes and failures; Kennedy\u2019s Alliance for Progress; Nixon\u2019s covert operations and Chile; Carter\u2019s quest for human rights and the Panama Canal Treaty (1977)",
+        links: { leaders: ["Kennedy", "Nixon"], crises: [], developments: [] },
+      },
+      {
+        text: "Cold War in one country of the Americas (except the US): reasons for foreign and domestic policies and their implementation",
+        links: { leaders: ["Castro", "Allende", "Pinochet", "Goulart"], crises: [], developments: [] },
+      },
+    ],
+  },
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function countLeafNodes(suboutlines) {
+  let total = 0;
+  let filled = 0;
+  function traverse(item) {
+    if (typeof item === "string") {
+      total++;
+      return;
+    }
+    if (!item.children || item.children.length === 0) {
+      total++;
+      if (item.content && item.content.length > 0) filled++;
+    } else {
+      item.children.forEach(traverse);
+    }
+  }
+  if (suboutlines) suboutlines.forEach(traverse);
+  return { total, filled };
+}
+
+function countAllLeaderLeaves() {
+  let total = 0;
+  let filled = 0;
+  data.leaders.forEach((l) => {
+    const r = countLeafNodes(l.suboutlines);
+    total += r.total;
+    filled += r.filled;
+  });
+  return { total, filled };
+}
+
+function countCrisisProgress() {
+  let total = 0;
+  let filled = 0;
+  data.crises.forEach((c) => {
+    total += 2; // causes + impact
+    if (Array.isArray(c.causes)) filled++;
+    if (Array.isArray(c.impact)) filled++;
+    if (c.leaderContent && c.leaderContent.length > 0) {
+      total++;
+      filled++;
+    }
+  });
+  return { total, filled };
+}
+
+function countDevProgress() {
+  const allItems = Object.values(data.developments).flatMap((d) => d.items);
+  const standalone = allItems.filter((d) => !d.absorbed);
+  // Each standalone dev is one outline that needs writing; none are "filled" yet (detail is a planning note, not written content)
+  return { total: standalone.length, filled: 0 };
+}
+
+function countTotalWords() {
+  let words = 0;
+  function ws(s) { if (!s) return; words += s.trim().split(/\s+/).filter(Boolean).length; }
+  function countArr(arr) {
+    if (!arr) return;
+    arr.forEach((c) => {
+      if (typeof c === "string") { ws(c); }
+      else { if (c.body) ws(c.body); if (c.bullets) c.bullets.forEach(ws); }
+    });
+  }
+  function traverseLeaves(items) {
+    if (!items) return;
+    items.forEach((item) => {
+      if (item.content) countArr(item.content);
+      if (item.children) traverseLeaves(item.children);
+    });
+  }
+  data.leaders.forEach((l) => traverseLeaves(l.suboutlines));
+  data.crises.forEach((c) => {
+    if (Array.isArray(c.causes)) countArr(c.causes); else if (typeof c.causes === "string") ws(c.causes);
+    if (Array.isArray(c.impact)) countArr(c.impact); else if (typeof c.impact === "string") ws(c.impact);
+    if (c.leaderContent) c.leaderContent.forEach((lc) => { if (lc.bullets) lc.bullets.forEach(ws); });
+  });
+  return words;
+}
+
+function getAbsorbedTargets(status) {
+  const leaderNames = data.leaders.map((l) => l.name);
+  const crisisNames = data.crises.map((c) => c.name);
+  const foundLeaders = leaderNames.filter((name) => status.includes(name));
+  const foundCrises = crisisNames.filter((name) => status.includes(name));
+  return { leaders: foundLeaders, crises: foundCrises };
+}
+
+// ─── COLOURS ──────────────────────────────────────────────────────────────────
+const paperColors = {
+  "P2 Auth": { bg: "#E8D5B7", text: "#5C4A32" },
+  "P2 CW": { bg: "#B7D5E8", text: "#32495C" },
+  "P3 WW2": { bg: "#D5E8B7", text: "#495C32" },
+  "P3 LatAm": { bg: "#E8B7D5", text: "#5C324A" },
+  "P3 CW Americas": { bg: "#D5B7E8", text: "#4A325C" },
+};
+
+const statusColors = {
+  firm: { bg: "#2D6A4F", text: "#fff" },
+  provisional: { bg: "#E9C46A", text: "#264653" },
+};
+
+const devStatusColors = {
+  standalone: "#2D6A4F",
+  "standalone (necessary)": "#2D6A4F",
+  "standalone (short)": "#457B6B",
+  "partially standalone": "#457B6B",
+  consolidate: "#E9C46A",
+  "consolidate into one note": "#E9C46A",
+  "consolidate with above": "#E9C46A",
+  "absorb into origins note": "#999",
+  "absorbed by Truman": "#999",
+  "absorbed by Truman/Eisenhower + Allende/Pinochet": "#999",
+  "absorbed by LATAM leaders": "#999",
+  "absorbed by Khrushchev": "#999",
+  "absorbed by Nixon": "#999",
+  "partially absorbed by Khrushchev": "#B0A080",
+  "partially absorbed by Adenauer + Truman": "#B0A080",
+  "partially absorbed": "#B0A080",
+  "absorbed by Brezhnev + Reagan": "#999",
+  "absorbed by leaders": "#999",
+  "covered in crisis note + leaders": "#999",
+};
+
+// ─── SMALL COMPONENTS ─────────────────────────────────────────────────────────
+function PaperBadge({ paper, onNavigate }) {
+  const c = paperColors[paper] || { bg: "#ddd", text: "#333" };
+  const shared = { display: "inline-block", padding: "2px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600, backgroundColor: c.bg, color: c.text, marginRight: "4px", marginBottom: "2px", letterSpacing: "0.3px" };
+  if (onNavigate) return (
+    <button onClick={() => onNavigate("syllabus", paper)} style={{ ...shared, border: "none", cursor: "pointer", textDecoration: "none" }}>
+      {paper}
+    </button>
+  );
+  return (
+    <span style={shared}>
+      {paper}
+    </span>
+  );
+}
+
+function StatusBadge({ status }) {
+  const c = statusColors[status] || { bg: "#ddd", text: "#333" };
+  return (
+    <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: "3px", fontSize: "11px", fontWeight: 700, backgroundColor: c.bg, color: c.text, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+      {status}
+    </span>
+  );
+}
+
+// ─── BULLET / PARAGRAPH RENDERER ─────────────────────────────────────────────
+function ContentRenderer({ paragraphs }) {
+  if (!Array.isArray(paragraphs)) {
+    return (
+      <div style={{ fontSize: "13px", color: "#333", fontFamily: "'Georgia', serif", lineHeight: 1.6 }}>
+        {paragraphs}
+      </div>
+    );
+  }
+  return (
+    <>
+      {paragraphs.map((p, i) => (
+        <div key={i} style={{ marginBottom: "14px", padding: "12px 14px", backgroundColor: "#f9f8f5", borderRadius: "4px", border: "1px solid #e8e6e0" }}>
+          <div style={{ fontSize: "12px", fontWeight: 700, color: "#264653", marginBottom: "6px", fontFamily: "'Georgia', serif", letterSpacing: "0.2px" }}>
+            {p.title}
+          </div>
+          {p.bullets ? (
+            <ul style={{ margin: "0", paddingLeft: "18px", listStyleType: "disc" }}>
+              {p.bullets.map((b, j) => (
+                <li key={j} style={{ fontSize: "12.5px", color: "#333", fontFamily: "'Georgia', serif", lineHeight: 1.65, marginBottom: "3px" }}>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div style={{ fontSize: "13px", color: "#333", fontFamily: "'Georgia', serif", lineHeight: 1.75 }}>
+              {p.body}
+            </div>
+          )}
+        </div>
+      ))}
+    </>
+  );
+}
+
+// ─── EDIT CONTEXT + MODAL ─────────────────────────────────────────────────────
+const EditContext = React.createContext({ overlay: {}, onEdit: () => {} });
+
+function parseEditText(text) {
+  const cards = [];
+  text.trim().split(/\n\s*\n/).forEach(block => {
+    const lines = block.trim().split('\n').filter(Boolean);
+    if (!lines.length) return;
+    const title = lines[0].replace(/^#+\s*/, '').trim();
+    const bullets = lines.slice(1).map(l => l.replace(/^[-*•]\s*/, '').trim()).filter(Boolean);
+    if (title) cards.push({ title, bullets });
+  });
+  return cards;
+}
+
+function serializeContent(content) {
+  if (!Array.isArray(content) || !content.length) return '';
+  return content.map(c => `# ${c.title}\n${(c.bullets || []).map(b => `- ${b}`).join('\n')}`).join('\n\n');
+}
+
+function EditModal({ pathArr, currentContent, onSave, onClose, mode }) {
+  const isText = mode === "text";
+  const [text, setText] = useState(isText ? (currentContent || "") : serializeContent(currentContent));
+  return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ backgroundColor: '#fff', borderRadius: '6px', width: '100%', maxWidth: '560px', maxHeight: '82vh', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 40px rgba(0,0,0,0.2)' }}>
+        <div style={{ padding: '14px 18px', borderBottom: '1px solid #eee', backgroundColor: '#264653', borderRadius: '6px 6px 0 0' }}>
+          <div style={{ fontSize: '10px', color: '#E9C46A', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '3px' }}>Editing</div>
+          <div style={{ fontSize: '13px', color: '#fff', fontFamily: "'Georgia', serif" }}>{pathArr.join(' › ')}</div>
+        </div>
+        {!isText && (
+          <div style={{ padding: '8px 14px', backgroundColor: '#f5f3ee', borderBottom: '1px solid #eee', fontSize: '11px', color: '#999', fontFamily: "'Georgia', serif", fontStyle: 'italic' }}>
+            # Card Title → newlines with - bullets → blank line between cards
+          </div>
+        )}
+        <textarea
+          autoFocus
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder={isText ? "Enter notes here..." : "# Card Title\n- First bullet\n- Second bullet\n\n# Another Card\n- Another point"}
+          style={{ flex: 1, padding: '14px 16px', border: 'none', outline: 'none', fontFamily: "'Georgia', serif", fontSize: '13px', lineHeight: 1.6, resize: 'none', minHeight: '220px', color: '#333' }}
+        />
+        <div style={{ padding: '10px 14px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+          <button onClick={onClose} style={{ padding: '7px 16px', fontSize: '12px', border: '1px solid #ccc', borderRadius: '3px', cursor: 'pointer', backgroundColor: '#f5f3ee', fontFamily: "'Georgia', serif" }}>Cancel</button>
+          <button onClick={() => { onSave(isText ? text : parseEditText(text)); onClose(); }} style={{ padding: '7px 16px', fontSize: '12px', border: 'none', borderRadius: '3px', cursor: 'pointer', backgroundColor: '#264653', color: '#fff', fontWeight: 700, fontFamily: "'Georgia', serif" }}>Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SUBOUTLINE ITEM (with depth-0 branch collapse) ─────────────────────────
+function SuboutlineItem({ item, depth, path, onContentClick }) {
+  const [branchOpen, setBranchOpen] = useState(true);
+
+  const isString = typeof item === "string";
+  const name = isString ? item : item.name;
+  const children = isString ? null : item.children;
+  const content = isString ? null : item.content;
+  const hasContent = content && content.length > 0;
+  const hasChildren = children && children.length > 0;
+  const currentPath = [...path, name];
+  const isTopBranch = depth === 0 && hasChildren;
+  const isLeaf = !hasChildren;
+
+  const { overlay, onEdit } = React.useContext(EditContext);
+  const pathKey = currentPath.join(" > ");
+  const effectiveContent = overlay[pathKey] !== undefined ? overlay[pathKey] : content;
+  const effectiveHasContent = effectiveContent && effectiveContent.length > 0;
+
+  const handleClick = () => {
+    if (isTopBranch) {
+      setBranchOpen(!branchOpen);
+    } else if (effectiveHasContent) {
+      onContentClick(effectiveContent, currentPath);
+    }
+  };
+
+  // Leaf nodes render as cards
+  if (isLeaf) {
+    return (
+      <div style={{ paddingLeft: depth > 0 ? "10px" : "0" }}>
+        <div
+          onClick={effectiveHasContent ? handleClick : undefined}
+          style={{
+            marginBottom: "5px", marginTop: "5px", padding: "8px 12px",
+            backgroundColor: effectiveHasContent ? "#f0f7f2" : "#faf9f6",
+            border: effectiveHasContent ? "1px solid #b8d9c8" : "1px solid #e0ddd6",
+            borderRadius: "5px", cursor: effectiveHasContent ? "pointer" : "default",
+            display: "flex", justifyContent: "space-between", alignItems: "center", transition: "all 0.15s",
+          }}
+        >
+          <span style={{ fontSize: "12px", fontWeight: effectiveHasContent ? 600 : 400, color: effectiveHasContent ? "#264653" : "#888", fontFamily: "'Georgia', serif", lineHeight: 1.4 }}>
+            {name}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+            {effectiveHasContent ? (
+              <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontFamily: "sans-serif", fontWeight: 700, letterSpacing: "0.3px" }}>
+                {effectiveContent.length} {effectiveContent.length === 1 ? "card" : "cards"}
+              </span>
+            ) : (
+              <span style={{ fontSize: "9px", color: "#bbb", fontStyle: "italic", fontFamily: "sans-serif" }}>empty</span>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(currentPath, effectiveContent); }}
+              title="Edit content"
+              style={{ fontSize: "11px", padding: "1px 6px", backgroundColor: "transparent", color: "#bbb", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", fontFamily: "sans-serif", lineHeight: 1.4, transition: "all 0.15s" }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#bbb"; e.currentTarget.style.borderColor = "#ddd"; }}
+            >✎</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Branch nodes
+  const depthStyles = [
+    { fontSize: "12px", fontWeight: 700, color: "#2D5A4A", paddingLeft: "0", borderLeft: "none" },
+    { fontSize: "12px", fontWeight: 500, color: "#3a3a3a", paddingLeft: "10px", borderLeft: "2px solid #b8d9c8" },
+    { fontSize: "11px", fontWeight: 400, color: "#555", paddingLeft: "10px", borderLeft: "2px solid #dde9e4" },
+  ];
+  const s = depthStyles[Math.min(depth, 2)];
+
+  return (
+    <div style={{ paddingLeft: depth > 0 ? "10px" : "0" }}>
+      <div
+        onClick={isTopBranch ? handleClick : undefined}
+        style={{
+          fontSize: s.fontSize,
+          fontWeight: s.fontWeight,
+          color: s.color,
+          paddingLeft: s.paddingLeft,
+          borderLeft: s.borderLeft,
+          marginBottom: "3px",
+          marginTop: depth === 0 ? "6px" : "0",
+          fontFamily: "'Georgia', serif",
+          lineHeight: 1.4,
+          cursor: isTopBranch ? "pointer" : "default",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          transition: "background 0.1s",
+        }}
+      >
+        {isTopBranch && (
+          <span style={{ fontSize: "9px", color: "#888", flexShrink: 0, width: "10px", textAlign: "center", transition: "transform 0.15s", transform: branchOpen ? "rotate(90deg)" : "rotate(0)" }}>
+            {"\u25B6"}
+          </span>
+        )}
+        <span>{name}</span>
+      </div>
+      {hasChildren &&
+        (isTopBranch ? branchOpen : true) &&
+        children.map((child, i) => (
+          <SuboutlineItem key={i} item={child} depth={depth + 1} path={currentPath} onContentClick={onContentClick} />
+        ))}
+    </div>
+  );
+}
+
+// ─── LEADER CARD ──────────────────────────────────────────────────────────────
+function LeaderCard({ leader, isExpanded, onToggle, onNavigate, onXRef, id }) {
+  const [detailView, setDetailView] = useState(null);
+
+  useEffect(() => {
+    if (!isExpanded) setDetailView(null);
+  }, [isExpanded]);
+
+  const handleToggle = () => {
+    if (isExpanded) setDetailView(null);
+    onToggle();
+  };
+
+  const leafInfo = countLeafNodes(leader.suboutlines);
+
+  return (
+    <div
+      id={id}
+      style={{
+        border: "1px solid #d0cec8",
+        borderRadius: "4px",
+        marginBottom: "8px",
+        backgroundColor: "#fff",
+        borderLeft: "1px solid #d0cec8",
+      }}
+    >
+      {/* Header */}
+      <div
+        onClick={handleToggle}
+        style={{ padding: "12px 16px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none" }}
+      >
+        <div>
+          <span style={{ fontWeight: 700, fontSize: "15px", color: "#1a1a1a", fontFamily: "'Georgia', serif" }}>
+            {leader.name}
+          </span>
+          <div style={{ marginTop: "4px" }}>
+            {leader.papers.map((p) => (
+              <PaperBadge key={p} paper={p} onNavigate={onNavigate} />
+            ))}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {leafInfo.total > 0 && (
+            <span style={{ fontSize: "11px", color: "#888", fontFamily: "'Georgia', serif" }}>
+              {leafInfo.filled}/{leafInfo.total}
+            </span>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); onXRef(leader.name); }}
+            title="Show where this leader appears"
+            style={{
+              fontSize: "14px", padding: "1px 7px", backgroundColor: "#e8f0ed",
+              color: "#2D6A4F", border: "1px solid #b8d9c8", borderRadius: "3px",
+              cursor: "pointer", fontFamily: "sans-serif", fontWeight: 400,
+              lineHeight: 1.4, transition: "all 0.15s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "#e8f0ed"; e.currentTarget.style.color = "#2D6A4F"; e.currentTarget.style.borderColor = "#b8d9c8"; }}
+          >
+            {"\u24D8"}
+          </button>
+          <span style={{ fontSize: "18px", color: "#888", transition: "transform 0.2s", transform: isExpanded ? "rotate(90deg)" : "rotate(0)" }}>{"\u25B6"}</span>
+        </div>
+      </div>
+
+      {/* Outline view */}
+      {isExpanded && !detailView && (
+        <div style={{ padding: "0 16px 16px", borderTop: "1px solid #eee" }}>
+          {/* Notes field */}
+          {leader.notes && (
+            <div style={{ marginTop: "12px", padding: "10px 14px", backgroundColor: "#f5f3ee", borderRadius: "4px", borderLeft: "3px solid #aaa" }}>
+              <div style={{ fontSize: "13px", color: "#444", fontFamily: "'Georgia', serif", lineHeight: 1.6 }}>{leader.notes}</div>
+            </div>
+          )}
+
+          {/* Topic Outlines */}
+          {leader.suboutlines && leader.suboutlines.length > 0 && (
+            <div style={{ marginTop: "14px" }}>
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>
+                Topic Outlines
+                <span style={{ marginLeft: "8px", fontSize: "10px", fontWeight: 400, color: "#aaa", fontStyle: "italic" }}>click filled items to read</span>
+              </div>
+              <div style={{ backgroundColor: "#f4f8f5", borderRadius: "4px", padding: "10px 14px", border: "1px solid #d4e8db" }}>
+                {leader.suboutlines.map((item, i) => (
+                  <SuboutlineItem key={i} item={item} depth={0} path={[leader.name]} onContentClick={(content, path) => setDetailView({ content, path })} />
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+      )}
+
+      {/* Detail / reading view */}
+      {isExpanded && detailView && (
+        <div style={{ padding: "0 16px 20px", borderTop: "1px solid #eee" }}>
+          <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+            <button
+              onClick={() => setDetailView(null)}
+              style={{ padding: "5px 12px", fontSize: "12px", fontFamily: "'Georgia', serif", border: "1px solid #ccc", borderRadius: "3px", cursor: "pointer", backgroundColor: "#f5f3ee", color: "#333", fontWeight: 600 }}
+            >
+              {"\u2190"} Back
+            </button>
+            <div style={{ fontSize: "11px", color: "#888", fontFamily: "'Georgia', serif" }}>
+              {detailView.path.join(" \u203A ")}
+            </div>
+          </div>
+          <div style={{ fontSize: "16px", fontWeight: 700, color: "#1a1a1a", fontFamily: "'Georgia', serif", marginBottom: "16px", paddingBottom: "8px", borderBottom: "1px solid #e8e6e0" }}>
+            {detailView.path[detailView.path.length - 1]}
+          </div>
+          <ContentRenderer paragraphs={detailView.content} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── CRISIS ACCORDION SECTION ────────────────────────────────────────────────
+function AccordionSection({ title, isOpen, onToggle, count, onEdit, children }) {
+  return (
+    <div style={{ marginTop: "10px", border: "1px solid #e0ddd6", borderRadius: "4px", overflow: "hidden" }}>
+      <div
+        onClick={onToggle}
+        style={{ padding: "10px 14px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none", backgroundColor: isOpen ? "#f0ede6" : "#faf9f6", transition: "background 0.15s" }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "11px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>{title}</span>
+          {count != null && (
+            <span style={{ fontSize: "9px", backgroundColor: "#264653", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontWeight: 700, fontFamily: "sans-serif" }}>{count}</span>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {onEdit && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(); }}
+              style={{ fontSize: "11px", padding: "1px 6px", backgroundColor: "transparent", color: "#bbb", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", lineHeight: 1.4, transition: "all 0.15s" }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#bbb"; e.currentTarget.style.borderColor = "#ddd"; }}
+            >✎</button>
+          )}
+          <span style={{ fontSize: "14px", color: "#888", transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "rotate(0)" }}>{"\u25B6"}</span>
+        </div>
+      </div>
+      {isOpen && <div style={{ padding: "12px 14px", borderTop: "1px solid #e0ddd6" }}>{children}</div>}
+    </div>
+  );
+}
+
+// ─── CRISIS CARD ─────────────────────────────────────────────────────────────
+function CrisisCard({ crisis, isExpanded, onToggle, onNavigate, onXRef, id }) {
+  const [openSections, setOpenSections] = useState({});
+
+  useEffect(() => {
+    if (!isExpanded) setOpenSections({});
+  }, [isExpanded]);
+
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const { overlay, onEdit } = React.useContext(EditContext);
+  const causesKey = `crisis > ${crisis.name} > causes`;
+  const impactKey = `crisis > ${crisis.name} > impact`;
+  const effectiveCauses = overlay[causesKey] !== undefined ? overlay[causesKey] : crisis.causes;
+  const effectiveImpact = overlay[impactKey] !== undefined ? overlay[impactKey] : crisis.impact;
+  const causesCount = Array.isArray(effectiveCauses) ? effectiveCauses.length : 0;
+  const impactCount = Array.isArray(effectiveImpact) ? effectiveImpact.length : 0;
+  const leaderContentCount = crisis.leaderContent ? crisis.leaderContent.length : 0;
+
+  return (
+    <div id={id} style={{ border: "1px solid #d0cec8", borderRadius: "4px", marginBottom: "8px", backgroundColor: "#fff" }}>
+      <div onClick={onToggle} style={{ padding: "12px 16px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none" }}>
+        <div>
+          <span style={{ fontWeight: 700, fontSize: "15px", color: "#1a1a1a", fontFamily: "'Georgia', serif" }}>{crisis.name}</span>
+          <div style={{ marginTop: "4px" }}>
+            {crisis.papers.map((p) => (
+              <PaperBadge key={p} paper={p} onNavigate={onNavigate} />
+            ))}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {(causesCount > 0 || impactCount > 0) && (
+            <span style={{ fontSize: "10px", color: "#2D6A4F", fontWeight: 600 }}>
+              {causesCount > 0 ? "\u2713 C" : ""}{impactCount > 0 ? " \u2713 I" : ""}
+            </span>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); onXRef(crisis.name); }}
+            title="Show where this crisis appears"
+            style={{ fontSize: "14px", padding: "1px 7px", backgroundColor: "#e8f0ed", color: "#2D6A4F", border: "1px solid #b8d9c8", borderRadius: "3px", cursor: "pointer", fontFamily: "sans-serif", fontWeight: 400, lineHeight: 1.4, transition: "all 0.15s" }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "#e8f0ed"; e.currentTarget.style.color = "#2D6A4F"; e.currentTarget.style.borderColor = "#b8d9c8"; }}
+          >{"\u24D8"}</button>
+          <span style={{ fontSize: "18px", color: "#888", transition: "transform 0.2s", transform: isExpanded ? "rotate(90deg)" : "rotate(0)" }}>{"\u25B6"}</span>
+        </div>
+      </div>
+      {isExpanded && (
+        <div style={{ padding: "0 16px 16px", borderTop: "1px solid #eee" }}>
+          {/* Leader navigation links — always visible */}
+          <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap", gap: "4px", alignItems: "center" }}>
+            <span style={{ fontSize: "10px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px", marginRight: "6px" }}>Leaders:</span>
+            {crisis.leaderLinks.map((l) => (
+              <button
+                key={l}
+                onClick={() => onNavigate("leaders", l)}
+                style={{ fontSize: "11px", padding: "3px 10px", backgroundColor: "#2D6A4F", color: "#fff", border: "none", borderRadius: "3px", cursor: "pointer", fontFamily: "'Georgia', serif", fontWeight: 600 }}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+
+          {/* Causes accordion */}
+          <AccordionSection
+            title="Causes"
+            isOpen={openSections.causes}
+            onToggle={() => toggleSection("causes")}
+            count={causesCount > 0 ? `${causesCount} cards` : null}
+            onEdit={() => onEdit([causesKey], effectiveCauses)}
+          >
+            <ContentRenderer paragraphs={effectiveCauses} />
+          </AccordionSection>
+
+          {/* Impact accordion */}
+          <AccordionSection
+            title="Impact & Significance"
+            isOpen={openSections.impact}
+            onToggle={() => toggleSection("impact")}
+            count={impactCount > 0 ? `${impactCount} cards` : null}
+            onEdit={() => onEdit([impactKey], effectiveImpact)}
+          >
+            <ContentRenderer paragraphs={effectiveImpact} />
+          </AccordionSection>
+
+          {/* Leader Analysis accordion */}
+          {crisis.leaderContent && crisis.leaderContent.length > 0 && (
+            <AccordionSection
+              title="Leader Analysis"
+              isOpen={openSections.leaderAnalysis}
+              onToggle={() => toggleSection("leaderAnalysis")}
+              count={`${leaderContentCount} leaders`}
+            >
+              {crisis.leaderContent.map((lc, i) => (
+                <div key={i} style={{ marginBottom: i < crisis.leaderContent.length - 1 ? "14px" : "0" }}>
+                  <div style={{ fontSize: "13px", fontWeight: 700, color: "#264653", marginBottom: "6px", fontFamily: "'Georgia', serif" }}>{lc.name}</div>
+                  <ul style={{ margin: "0", paddingLeft: "18px", listStyleType: "disc" }}>
+                    {lc.bullets.map((b, j) => (
+                      <li key={j} style={{ fontSize: "12.5px", color: "#333", fontFamily: "'Georgia', serif", lineHeight: 1.65, marginBottom: "3px" }}>
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </AccordionSection>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── DEVELOPMENTS SECTION ────────────────────────────────────────────────────
+function DevSection({ title, items, papers, onNavigate }) {
+  const [expanded, setExpanded] = useState({});
+  const { overlay, onEdit } = React.useContext(EditContext);
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", flexWrap: "wrap" }}>
+        <h4 style={{ fontFamily: "'Georgia', serif", fontSize: "15px", color: "#264653", fontWeight: 700, margin: 0 }}>{title}</h4>
+        {papers && papers.map((p) => (
+          <PaperBadge key={p} paper={p} onNavigate={onNavigate} />
+        ))}
+      </div>
+      {items.map((item, i) => {
+        const devKey = `dev > ${item.name}`;
+        const effectiveDetail = overlay[devKey] !== undefined ? overlay[devKey] : item.detail;
+        const isCards = Array.isArray(effectiveDetail) && effectiveDetail.length > 0;
+        const isText = typeof effectiveDetail === 'string' && effectiveDetail.length > 0;
+        const hasDetail = isCards || isText;
+        const isOpen = expanded[i];
+        return (
+          <div key={i} id={`dev-${item.name.replace(/\s+/g, "-")}`} style={{ paddingLeft: "0" }}>
+            <div
+              onClick={() => hasDetail && setExpanded((prev) => ({ ...prev, [i]: !prev[i] }))}
+              style={{ marginBottom: "5px", marginTop: "5px", padding: "8px 12px", backgroundColor: hasDetail ? "#f0f7f2" : "#faf9f6", border: `1px solid ${hasDetail ? "#b8d9c8" : "#e0ddd6"}`, borderRadius: isOpen ? "5px 5px 0 0" : "5px", cursor: hasDetail ? "pointer" : "default", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "all 0.15s", userSelect: "none" }}
+            >
+              <span style={{ fontSize: "12px", fontWeight: hasDetail ? 600 : 400, color: hasDetail ? "#264653" : "#888", fontFamily: "'Georgia', serif", lineHeight: 1.4 }}>
+                {item.name}
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                {isCards ? (
+                  <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontFamily: "sans-serif", fontWeight: 700, letterSpacing: "0.3px" }}>
+                    {effectiveDetail.length} {effectiveDetail.length === 1 ? "card" : "cards"}
+                  </span>
+                ) : isText ? (
+                  <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontFamily: "sans-serif", fontWeight: 700, letterSpacing: "0.3px" }}>note</span>
+                ) : (
+                  <span style={{ fontSize: "9px", color: "#bbb", fontStyle: "italic", fontFamily: "sans-serif" }}>empty</span>
+                )}
+                <button
+                  onClick={(e) => { e.stopPropagation(); onEdit([devKey], effectiveDetail, isCards ? "cards" : "text"); }}
+                  title="Edit content"
+                  style={{ fontSize: "11px", padding: "1px 6px", backgroundColor: "transparent", color: "#bbb", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", lineHeight: 1.4, transition: "all 0.15s" }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#bbb"; e.currentTarget.style.borderColor = "#ddd"; }}
+                >✎</button>
+                {hasDetail && (
+                  <span style={{ fontSize: "9px", color: "#aaa", fontFamily: "sans-serif", display: "inline-block", transition: "transform 0.15s", transform: isOpen ? "rotate(90deg)" : "rotate(0)" }}>{"\u25B6"}</span>
+                )}
+              </div>
+            </div>
+            {isOpen && hasDetail && (
+              <div style={{ padding: "10px 12px 12px", backgroundColor: "#f0f7f2", border: "1px solid #b8d9c8", borderTop: "none", borderRadius: "0 0 5px 5px", marginTop: "-5px", marginBottom: "5px" }}>
+                {isCards ? (
+                  effectiveDetail.map((card, ci) => (
+                    <div key={ci} style={{ marginBottom: ci < effectiveDetail.length - 1 ? "10px" : "0" }}>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#264653", fontFamily: "'Georgia', serif", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.4px" }}>{card.title}</div>
+                      {(card.bullets || []).map((b, bi) => (
+                        <div key={bi} style={{ display: "flex", gap: "6px", fontSize: "12px", color: "#444", fontFamily: "'Georgia', serif", lineHeight: 1.5, paddingLeft: "4px" }}>
+                          <span style={{ color: "#2D6A4F", flexShrink: 0 }}>•</span>
+                          <span>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ margin: 0, fontSize: "12px", color: "#555", fontFamily: "'Georgia', serif", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{effectiveDetail}</p>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── SYLLABUS TAB ─────────────────────────────────────────────────────────────
+function SyllabusTab({ onNavigate }) {
+  const [expanded, setExpanded] = useState({});
+
+  return (
+    <div>
+      <div style={{ padding: "10px 14px", backgroundColor: "#f5f3ee", borderRadius: "4px", marginBottom: "16px", fontSize: "12px", color: "#666", fontFamily: "'Georgia', serif", fontStyle: "italic" }}>
+        Click any syllabus point to see which leaders, crises, and developments match it. Use the links to jump to that content.
+      </div>
+      {syllabus.map((section, si) => {
+        const pc = paperColors[section.paper] || { bg: "#ddd", text: "#333" };
+        return (
+          <div key={si} id={`syllabus-${section.paper.replace(/\s+/g, "-")}`} style={{ marginBottom: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+              <span style={{ fontSize: "11px", fontWeight: 700, padding: "3px 10px", borderRadius: "3px", backgroundColor: pc.bg, color: pc.text }}>{section.paper}</span>
+              <span style={{ fontFamily: "'Georgia', serif", fontSize: "15px", fontWeight: 700, color: "#264653" }}>{section.title}</span>
+            </div>
+            {section.points.map((point, pi) => {
+              const key = `${si}-${pi}`;
+              const isOpen = expanded[key];
+              const hasLinks = point.links.leaders.length + point.links.crises.length + point.links.developments.length > 0;
+              return (
+                <div key={pi} style={{ border: "1px solid #e0ddd6", borderRadius: "4px", marginBottom: "6px", backgroundColor: "#fff" }}>
+                  <div
+                    onClick={() => hasLinks && setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))}
+                    style={{ padding: "10px 14px", cursor: hasLinks ? "pointer" : "default", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px", userSelect: "none" }}
+                  >
+                    <div style={{ fontSize: "13px", fontFamily: "'Georgia', serif", color: "#1a1a1a", lineHeight: 1.5, flex: 1 }}>{point.text}</div>
+                    {hasLinks && (
+                      <span style={{ fontSize: "16px", color: "#888", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.2s" }}>{"\u25B6"}</span>
+                    )}
+                  </div>
+                  {isOpen && (
+                    <div style={{ padding: "0 14px 12px", borderTop: "1px solid #eee" }}>
+                      {point.links.leaders.length > 0 && (
+                        <div style={{ marginTop: "10px" }}>
+                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "5px" }}>Leaders</div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                            {point.links.leaders.map((l) => (
+                              <button key={l} onClick={() => onNavigate("leaders", l)} style={{ fontSize: "12px", padding: "3px 10px", backgroundColor: "#2D6A4F", color: "#fff", border: "none", borderRadius: "3px", cursor: "pointer", fontFamily: "'Georgia', serif", fontWeight: 600 }}>
+                                {l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {point.links.crises.length > 0 && (
+                        <div style={{ marginTop: "10px" }}>
+                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "5px" }}>Crises</div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                            {point.links.crises.map((c) => (
+                              <button key={c} onClick={() => onNavigate("crises", c)} style={{ fontSize: "12px", padding: "3px 10px", backgroundColor: "#264653", color: "#fff", border: "none", borderRadius: "3px", cursor: "pointer", fontFamily: "'Georgia', serif", fontWeight: 600 }}>
+                                {c}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {point.links.developments.length > 0 && (
+                        <div style={{ marginTop: "10px" }}>
+                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "5px" }}>Developments</div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                            {point.links.developments.map((d) => (
+                              <button key={d} onClick={() => onNavigate("developments", d)} style={{ fontSize: "12px", padding: "3px 10px", backgroundColor: "#f0ede6", color: "#555", border: "none", borderRadius: "3px", cursor: "pointer", fontFamily: "'Georgia', serif" }}>{d}</button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── SUMMARY + PROGRESS TRACKER ──────────────────────────────────────────────
+function Summary() {
+  const firmLeaders = data.leaders.filter((l) => l.status === "firm").length;
+  const provisionalLeaders = data.leaders.filter((l) => l.status === "provisional").length;
+  const allDevItems = Object.values(data.developments).flatMap((d) => d.items);
+  const standaloneDevs = allDevItems.filter((d) => !d.absorbed).length;
+  const absorbedDevs = allDevItems.filter((d) => d.absorbed).length;
+
+  const leaderLeaves = countAllLeaderLeaves();
+  const crisisProgress = countCrisisProgress();
+  const devProgress = countDevProgress();
+  const totalWords = countTotalWords();
+
+  const totalFilled = leaderLeaves.filled + crisisProgress.filled + devProgress.filled;
+  const totalAll = leaderLeaves.total + crisisProgress.total + devProgress.total;
+
+  return (
+    <div style={{ padding: "16px 20px", backgroundColor: "#264653", borderRadius: "6px", marginBottom: "24px", color: "#fff" }}>
+      <div style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "12px", color: "#E9C46A" }}>Coverage Summary</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px" }}>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: 700, fontFamily: "'Georgia', serif" }}>{data.leaders.length}</div>
+          <div style={{ fontSize: "12px", color: "#aaa" }}>Leaders</div>
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: 700, fontFamily: "'Georgia', serif" }}>{data.crises.length}</div>
+          <div style={{ fontSize: "12px", color: "#aaa" }}>Crises</div>
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: 700, fontFamily: "'Georgia', serif" }}>{standaloneDevs}</div>
+          <div style={{ fontSize: "12px", color: "#aaa" }}>Developments</div>
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: 700, fontFamily: "'Georgia', serif" }}>{totalWords.toLocaleString()}</div>
+          <div style={{ fontSize: "12px", color: "#aaa" }}>Words written</div>
+        </div>
+      </div>
+
+      {/* Progress tracker */}
+      <div style={{ marginTop: "14px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.15)" }}>
+        <div style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px", color: "#E9C46A" }}>Content Progress</div>
+        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+          <ProgressBar label="Leaders" filled={leaderLeaves.filled} total={leaderLeaves.total} />
+          <ProgressBar label="Crises" filled={crisisProgress.filled} total={crisisProgress.total} />
+          <ProgressBar label="Developments" filled={devProgress.filled} total={devProgress.total} />
+          <ProgressBar label="Total" filled={totalFilled} total={totalAll} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProgressBar({ label, filled, total }) {
+  const pct = total > 0 ? (filled / total) * 100 : 0;
+  return (
+    <div style={{ flex: 1, minWidth: "120px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+        <span style={{ fontSize: "11px", color: "#ccc" }}>{label}</span>
+        <span style={{ fontSize: "11px", color: "#fff", fontWeight: 700 }}>{filled}/{total}</span>
+      </div>
+      <div style={{ height: "6px", backgroundColor: "rgba(255,255,255,0.15)", borderRadius: "3px", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, backgroundColor: "#E9C46A", borderRadius: "3px", transition: "width 0.3s" }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── CROSS-REFERENCE SIDEBAR ──────────────────────────────────────────────────
+function getLeaderXRefs(name) {
+  const inCrises = data.crises.filter(c => c.leaderLinks && c.leaderLinks.includes(name));
+  const inSyllabus = [];
+  syllabus.forEach(s => s.points.forEach(p => { if (p.links.leaders.includes(name)) inSyllabus.push({ paper: s.paper, text: p.text }); }));
+  return { inCrises, inSyllabus };
+}
+
+function getCrisisXRefs(name) {
+  const crisis = data.crises.find(c => c.name === name);
+  const inLeaders = crisis ? crisis.leaderLinks : [];
+  const inSyllabus = [];
+  syllabus.forEach(s => s.points.forEach(p => { if (p.links.crises.includes(name)) inSyllabus.push({ paper: s.paper, text: p.text }); }));
+  return { inLeaders, inSyllabus };
+}
+
+function XRefSidebar({ type, name, onClose, onNavigate }) {
+  const isOpen = !!name;
+  const lr = (type === "leader" && name) ? getLeaderXRefs(name) : null;
+  const cr = (type === "crisis" && name) ? getCrisisXRefs(name) : null;
+  const sylRefs = lr ? lr.inSyllabus : (cr ? cr.inSyllabus : []);
+  const subtitle = isOpen
+    ? (type === "leader"
+        ? `${lr.inCrises.length} ${lr.inCrises.length === 1 ? "crisis" : "crises"} · ${lr.inSyllabus.length} syllabus ${lr.inSyllabus.length === 1 ? "point" : "points"}`
+        : `${cr.inLeaders.length} ${cr.inLeaders.length === 1 ? "leader" : "leaders"} · ${cr.inSyllabus.length} syllabus ${cr.inSyllabus.length === 1 ? "point" : "points"}`)
+    : "";
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
+
+  const SectionHead = ({ label, count }) => (
+    <div style={{ fontSize: "10px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+      {label}<span style={{ fontSize: "9px", backgroundColor: "#264653", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontWeight: 700 }}>{count}</span>
+    </div>
+  );
+  const GoBtn = ({ onClick }) => (
+    <button onClick={onClick} style={{ fontSize: "11px", padding: "5px 11px", backgroundColor: "#264653", color: "#fff", border: "none", borderRadius: "3px", cursor: "pointer", fontFamily: "'Georgia', serif", fontWeight: 600, whiteSpace: "nowrap", flexShrink: 0 }}>Go →</button>
+  );
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.22)", zIndex: 100, backdropFilter: "blur(1px)", opacity: isOpen ? 1 : 0, pointerEvents: isOpen ? "auto" : "none", transition: "opacity 0.25s ease" }} />
+      <div style={{ position: "fixed", top: 0, right: 0, height: "100vh", width: "340px", backgroundColor: "#fff", borderLeft: "1px solid #d0cec8", boxShadow: "-4px 0 28px rgba(0,0,0,0.14)", zIndex: 101, transform: isOpen ? "translateX(0)" : "translateX(100%)", transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1)", display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid #ddd", backgroundColor: "#264653", flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <div style={{ fontSize: "10px", fontWeight: 700, color: "#E9C46A", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "4px" }}>Cross-References</div>
+            <div style={{ fontSize: "21px", fontWeight: 700, color: "#fff", fontFamily: "'Georgia', serif", lineHeight: 1.2 }}>{name || ""}</div>
+            {isOpen && <div style={{ marginTop: "5px", fontSize: "11px", color: "rgba(255,255,255,0.55)", fontFamily: "'Georgia', serif" }}>{subtitle}</div>}
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.6)", fontSize: "22px", cursor: "pointer", lineHeight: 1, padding: "0 0 0 12px", flexShrink: 0 }}>×</button>
+        </div>
+
+        <div style={{ padding: "18px 20px", flex: 1, overflowY: "auto" }}>
+          {/* Leader view: crises */}
+          {type === "leader" && lr && (
+            <div style={{ marginBottom: "24px" }}>
+              <SectionHead label="Crises" count={lr.inCrises.length} />
+              {lr.inCrises.length === 0
+                ? <div style={{ fontSize: "12px", color: "#bbb", fontStyle: "italic", fontFamily: "'Georgia', serif" }}>Not linked to any crises</div>
+                : lr.inCrises.map((c, i) => {
+                    const hasAnalysis = c.leaderContent && c.leaderContent.some(lc => lc.name === name);
+                    return (
+                      <div key={i} style={{ marginBottom: "8px", padding: "11px 13px", backgroundColor: "#f0f7f2", border: "1px solid #b8d9c8", borderRadius: "5px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: "13px", fontWeight: 700, color: "#1a1a1a", fontFamily: "'Georgia', serif", marginBottom: "4px" }}>{c.name}</div>
+                            <div style={{ display: "flex", gap: "3px", flexWrap: "wrap", alignItems: "center" }}>
+                              {c.papers.map(p => <PaperBadge key={p} paper={p} />)}
+                              {hasAnalysis && <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontWeight: 700 }}>has analysis</span>}
+                            </div>
+                          </div>
+                          <GoBtn onClick={() => { onNavigate("crises", c.name); onClose(); }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+            </div>
+          )}
+
+          {/* Crisis view: leaders */}
+          {type === "crisis" && cr && (
+            <div style={{ marginBottom: "24px" }}>
+              <SectionHead label="Leaders" count={cr.inLeaders.length} />
+              {cr.inLeaders.length === 0
+                ? <div style={{ fontSize: "12px", color: "#bbb", fontStyle: "italic", fontFamily: "'Georgia', serif" }}>No linked leaders</div>
+                : <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    {cr.inLeaders.map((l, i) => (
+                      <button key={i} onClick={() => { onNavigate("leaders", l); onClose(); }} style={{ fontSize: "12px", padding: "5px 12px", backgroundColor: "#2D6A4F", color: "#fff", border: "none", borderRadius: "3px", cursor: "pointer", fontFamily: "'Georgia', serif", fontWeight: 600 }}>{l}</button>
+                    ))}
+                  </div>}
+            </div>
+          )}
+
+          {/* Shared: syllabus */}
+          <div>
+            <SectionHead label="Syllabus Points" count={sylRefs.length} />
+            {sylRefs.length === 0
+              ? <div style={{ fontSize: "12px", color: "#bbb", fontStyle: "italic", fontFamily: "'Georgia', serif" }}>Not linked to any syllabus points</div>
+              : sylRefs.map((ref, i) => (
+                  <div key={i} style={{ marginBottom: "8px", padding: "11px 13px", backgroundColor: "#f5f3ee", border: "1px solid #e0ddd6", borderRadius: "5px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ marginBottom: "5px" }}><PaperBadge paper={ref.paper} /></div>
+                        <div style={{ fontSize: "12px", color: "#444", fontFamily: "'Georgia', serif", lineHeight: 1.55 }}>{ref.text}</div>
+                      </div>
+                      <GoBtn onClick={() => { onNavigate("syllabus", ref.paper); onClose(); }} />
+                    </div>
+                  </div>
+                ))}
+          </div>
+        </div>
+
+        <div style={{ padding: "10px 20px", borderTop: "1px solid #eee", flexShrink: 0 }}>
+          <div style={{ fontSize: "11px", color: "#bbb", fontFamily: "'Georgia', serif", fontStyle: "italic" }}>Press Esc or click outside to close</div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── GITHUB INTEGRATION ───────────────────────────────────────────────────────
+function getMergedData(overlay) {
+  const exported = JSON.parse(JSON.stringify(data));
+  Object.entries(overlay).forEach(([pathKey, content]) => {
+    const parts = pathKey.split(" > ");
+    if (parts[0] === "crisis") {
+      const crisis = exported.crises.find(c => c.name === parts[1]);
+      if (crisis && parts[2]) crisis[parts[2]] = content;
+    } else if (parts[0] === "dev") {
+      Object.values(exported.developments).forEach(section => {
+        const item = section.items.find(it => it.name === parts[1]);
+        if (item) item.detail = content;
+      });
+    } else {
+      const leader = exported.leaders.find(l => l.name === parts[0]);
+      if (!leader) return;
+      const find = (items, names) => {
+        if (!items || !names.length) return null;
+        const node = items.find(n => n.name === names[0]);
+        if (!node) return null;
+        return names.length === 1 ? node : find(node.children, names.slice(1));
+      };
+      const node = find(leader.suboutlines, parts.slice(1));
+      if (node) node.content = content;
+    }
+  });
+  return exported;
+}
+
+function GitHubConfigModal({ onClose }) {
+  const saved = JSON.parse(localStorage.getItem('ibhistory_gh') || '{}');
+  const [token, setToken] = useState(saved.token || '');
+  const [owner, setOwner] = useState(saved.owner || '');
+  const [repo, setRepo]   = useState(saved.repo  || '');
+  const [path, setPath]   = useState(saved.path  || 'index.html');
+  const [branch, setBranch] = useState(saved.branch || 'main');
+
+  const canSave = token && owner && repo;
+  const save = () => {
+    localStorage.setItem('ibhistory_gh', JSON.stringify({ token, owner, repo, path, branch }));
+    onClose(true);
+  };
+
+  const inp = { width: '100%', padding: '7px 10px', fontSize: '13px', fontFamily: "'Georgia', serif", border: '1px solid #ccc', borderRadius: '3px', marginTop: '4px', boxSizing: 'border-box' };
+  const lbl = { fontSize: '11px', fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.5px' };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ backgroundColor: '#fff', borderRadius: '6px', width: '100%', maxWidth: '480px', boxShadow: '0 8px 40px rgba(0,0,0,0.2)' }}>
+        <div style={{ padding: '14px 18px', backgroundColor: '#264653', borderRadius: '6px 6px 0 0' }}>
+          <div style={{ fontSize: '10px', color: '#E9C46A', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '3px' }}>One-time setup</div>
+          <div style={{ fontSize: '15px', color: '#fff', fontFamily: "'Georgia', serif", fontWeight: 700 }}>GitHub Integration</div>
+        </div>
+        <div style={{ padding: '12px 18px', backgroundColor: '#f5f3ee', borderBottom: '1px solid #eee', fontSize: '12px', color: '#666', fontFamily: "'Georgia', serif", lineHeight: 1.55 }}>
+          Create a repo on GitHub, enable Pages, then go to <strong>Settings → Developer settings → Personal access tokens (classic)</strong> and generate a token with <code>repo</code> scope.
+        </div>
+        <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div>
+            <label style={lbl}>Personal Access Token</label>
+            <input type="password" value={token} onChange={e => setToken(e.target.value)} placeholder="ghp_..." style={inp} />
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ flex: 1 }}><label style={lbl}>GitHub Username</label><input value={owner} onChange={e => setOwner(e.target.value)} placeholder="yourusername" style={inp} /></div>
+            <div style={{ flex: 1 }}><label style={lbl}>Repository Name</label><input value={repo} onChange={e => setRepo(e.target.value)} placeholder="ib-history" style={inp} /></div>
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ flex: 2 }}><label style={lbl}>File path in repo</label><input value={path} onChange={e => setPath(e.target.value)} placeholder="index.html" style={inp} /></div>
+            <div style={{ flex: 1 }}><label style={lbl}>Branch</label><input value={branch} onChange={e => setBranch(e.target.value)} placeholder="main" style={inp} /></div>
+          </div>
+        </div>
+        <div style={{ padding: '12px 18px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
+          <button onClick={() => onClose(false)} style={{ padding: '7px 16px', fontSize: '12px', border: '1px solid #ccc', borderRadius: '3px', cursor: 'pointer', backgroundColor: '#f5f3ee', fontFamily: "'Georgia', serif" }}>Cancel</button>
+          <button onClick={save} disabled={!canSave} style={{ padding: '7px 16px', fontSize: '12px', border: 'none', borderRadius: '3px', cursor: canSave ? 'pointer' : 'default', backgroundColor: canSave ? '#264653' : '#ccc', color: '#fff', fontWeight: 700, fontFamily: "'Georgia', serif" }}>Save & Connect</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab] = useState("leaders");
+  const [expandedLeaders, setExpandedLeaders] = useState({});
+  const [expandedCrises, setExpandedCrises] = useState({});
+  const [xref, setXref] = useState(null); // { type: "leader"|"crisis", name }
+  const [editOverlay, setEditOverlay] = useState({});
+  const [editModal, setEditModal] = useState(null); // { pathArr, content }
+  const [saveStatus, setSaveStatus] = useState(null); // null | 'saving' | 'saved' | { error: string }
+  const [showGitHubConfig, setShowGitHubConfig] = useState(false);
+
+  const handleEdit = (pathArr, currentContent, mode) => setEditModal({ pathArr, content: currentContent, mode: mode || "cards" });
+  const handleSave = (newContent) => {
+    const key = editModal.pathArr.join(" > ");
+    setEditOverlay(prev => ({ ...prev, [key]: newContent }));
+  };
+
+  const exportData = () => {
+    const exported = getMergedData(editOverlay);
+    const json = `const data = ${JSON.stringify(exported, null, 2)};`;
+    navigator.clipboard.writeText(json).then(() => alert("Copied! In the HTML file, select from 'const data = {' to the closing '};' and paste to replace."));
+  };
+
+  const saveToGitHub = async () => {
+    const raw = localStorage.getItem('ibhistory_gh');
+    if (!raw) { setShowGitHubConfig(true); return; }
+    const cfg = JSON.parse(raw);
+    if (!cfg.token || !cfg.owner || !cfg.repo) { setShowGitHubConfig(true); return; }
+    setSaveStatus('saving');
+    try {
+      const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path || 'index.html'}`;
+      const headers = { 'Authorization': `Bearer ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+      // GET current file
+      const getRes = await fetch(`${apiBase}?ref=${cfg.branch || 'main'}`, { headers });
+      if (!getRes.ok) throw new Error(`GET failed: ${getRes.status} ${getRes.statusText}`);
+      const fileData = await getRes.json();
+      // Decode content (Unicode-safe)
+      const decoded = new TextDecoder().decode(Uint8Array.from(atob(fileData.content.replace(/\n/g, '')), c => c.charCodeAt(0)));
+      // Replace data block
+      const merged = getMergedData(editOverlay);
+      const newDataBlock = `const data = ${JSON.stringify(merged, null, 2)};`;
+      const replaced = decoded.replace(/const data = \{[\s\S]+?\};\n\n\/\/ ─── SYLLABUS DATA/, `${newDataBlock}\n\n// ─── SYLLABUS DATA`);
+      if (replaced === decoded) throw new Error("Could not locate data block to replace. Check the file has the expected // ─── SYLLABUS DATA marker.");
+      // Encode (Unicode-safe)
+      const bytes = new TextEncoder().encode(replaced);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      const encoded = btoa(binary);
+      // PUT back
+      const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify({ message: `Update revision data (${Object.keys(editOverlay).length} edit${Object.keys(editOverlay).length !== 1 ? 's' : ''})`, content: encoded, sha: fileData.sha, branch: cfg.branch || 'main' }) });
+      if (!putRes.ok) { const e = await putRes.json(); throw new Error(e.message || putRes.statusText); }
+      setEditOverlay({});
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus(null), 3000);
+    } catch (err) {
+      setSaveStatus({ error: err.message });
+    }
+  };
+
+  const handleNavigate = (targetTab, itemName) => {
+    setTab(targetTab);
+    if (targetTab === "leaders") {
+      const idx = data.leaders.findIndex((l) => l.name === itemName);
+      if (idx !== -1) {
+        setExpandedLeaders((prev) => ({ ...prev, [idx]: true }));
+        setTimeout(() => {
+          const el = document.getElementById(`leader-${idx}`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    } else if (targetTab === "crises") {
+      const idx = data.crises.findIndex((c) => c.name === itemName);
+      if (idx !== -1) {
+        setExpandedCrises((prev) => ({ ...prev, [idx]: true }));
+        setTimeout(() => {
+          const el = document.getElementById(`crisis-${idx}`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    } else if (targetTab === "developments") {
+      setTimeout(() => {
+        const el = document.getElementById(`dev-${itemName.replace(/\s+/g, "-")}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    } else if (targetTab === "syllabus") {
+      setTimeout(() => {
+        const el = document.getElementById(`syllabus-${itemName.replace(/\s+/g, "-")}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  };
+
+  const tabs = [
+    { id: "leaders", label: "Leaders", count: data.leaders.length },
+    { id: "crises", label: "Crises", count: data.crises.length },
+    { id: "developments", label: "Developments", count: Object.values(data.developments).flatMap((d) => d.items).filter((d) => !d.absorbed).length },
+    { id: "syllabus", label: "Syllabus", count: syllabus.reduce((a, s) => a + s.points.length, 0) },
+  ];
+
+  return (
+    <EditContext.Provider value={{ overlay: editOverlay, onEdit: handleEdit }}>
+    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", maxWidth: "780px", margin: "0 auto", padding: "24px 16px", backgroundColor: "#FAF9F6", minHeight: "100vh" }}>
+      <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <h1 style={{ fontFamily: "'Georgia', serif", fontSize: "22px", fontWeight: 700, color: "#1a1a1a", marginBottom: "4px" }}>
+            IB History {"\u2013"} Revision Architecture
+          </h1>
+          <p style={{ fontSize: "13px", color: "#888", fontFamily: "'Georgia', serif", fontStyle: "italic", margin: 0 }}>
+            {"Papers 2 & 3 \u00b7 Leaders \u00d7 Crises \u00d7 Developments \u00b7 Syllabus"}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center", flexShrink: 0 }}>
+          {saveStatus && typeof saveStatus === 'object' && (
+            <span style={{ fontSize: "12px", color: "#c0392b", maxWidth: "200px", wordBreak: "break-word" }}>⚠ {saveStatus.error}</span>
+          )}
+          {saveStatus === 'saved' && (
+            <span style={{ fontSize: "12px", color: "#2D6A4F", fontFamily: "'Georgia', serif" }}>✓ Saved to GitHub</span>
+          )}
+          {Object.keys(editOverlay).length > 0 && (
+            <button
+              onClick={saveStatus === 'saving' ? undefined : saveToGitHub}
+              style={{ padding: "8px 16px", backgroundColor: saveStatus === 'saving' ? "#888" : "#2D6A4F", color: "#fff", border: "none", borderRadius: "4px", cursor: saveStatus === 'saving' ? "default" : "pointer", fontFamily: "'Georgia', serif", fontSize: "13px", fontWeight: 700, whiteSpace: "nowrap" }}
+            >
+              {saveStatus === 'saving' ? "Saving…" : `Save to GitHub (${Object.keys(editOverlay).length})`}
+            </button>
+          )}
+          {Object.keys(editOverlay).length > 0 && (
+            <button
+              onClick={exportData}
+              title="Copy data block to clipboard"
+              style={{ padding: "8px 12px", backgroundColor: "transparent", color: "#555", border: "1px solid #ccc", borderRadius: "4px", cursor: "pointer", fontSize: "13px", whiteSpace: "nowrap" }}
+            >
+              Export
+            </button>
+          )}
+          <button
+            onClick={() => setShowGitHubConfig(true)}
+            title="GitHub settings"
+            style={{ padding: "6px 10px", backgroundColor: "transparent", color: "#888", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer", fontSize: "14px" }}
+          >
+            ⚙
+          </button>
+        </div>
+        {showGitHubConfig && <GitHubConfigModal onClose={(saved) => { setShowGitHubConfig(false); if (saved && Object.keys(editOverlay).length > 0) saveToGitHub(); }} />}
+      </div>
+
+      <Summary />
+
+      <div style={{ display: "flex", gap: "2px", marginBottom: "20px", borderBottom: "2px solid #264653", flexWrap: "wrap" }}>
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            style={{
+              padding: "10px 20px",
+              border: "none",
+              borderTopLeftRadius: "4px",
+              borderTopRightRadius: "4px",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: tab === t.id ? 700 : 500,
+              backgroundColor: tab === t.id ? "#264653" : "#e8e6e0",
+              color: tab === t.id ? "#fff" : "#555",
+              fontFamily: "'Georgia', serif",
+              letterSpacing: "0.3px",
+              transition: "all 0.15s",
+            }}
+          >
+            {t.label} ({t.count})
+          </button>
+        ))}
+      </div>
+
+      {tab === "leaders" && (
+        <div>
+          {data.leaders.map((l, i) => (
+            <LeaderCard
+              key={l.name}
+              leader={l}
+              isExpanded={expandedLeaders[i]}
+              onToggle={() => setExpandedLeaders((prev) => ({ ...prev, [i]: !prev[i] }))}
+              onNavigate={handleNavigate}
+              onXRef={(name) => setXref({ type: "leader", name })}
+              id={`leader-${i}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {tab === "crises" && (
+        <div>
+          {data.crises.map((c, i) => (
+            <CrisisCard
+              key={c.name}
+              crisis={c}
+              isExpanded={expandedCrises[i]}
+              onToggle={() => setExpandedCrises((prev) => ({ ...prev, [i]: !prev[i] }))}
+              onNavigate={handleNavigate}
+              onXRef={(name) => setXref({ type: "crisis", name })}
+              id={`crisis-${i}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {tab === "developments" && (
+        <div>
+          {Object.entries(data.developments).map(([key, section]) => (
+            <DevSection key={key} title={section.title} items={section.items} papers={section.papers} onNavigate={handleNavigate} />
+          ))}
+        </div>
+      )}
+
+      {tab === "syllabus" && <SyllabusTab onNavigate={handleNavigate} />}
+
+      <XRefSidebar
+        type={xref?.type}
+        name={xref?.name}
+        onClose={() => setXref(null)}
+        onNavigate={handleNavigate}
+      />
+      {editModal && (
+        <EditModal
+          pathArr={editModal.pathArr}
+          currentContent={editModal.content}
+          mode={editModal.mode}
+          onSave={handleSave}
+          onClose={() => setEditModal(null)}
+        />
+      )}
+    </div>
+    </EditContext.Provider>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
