@@ -28,1206 +28,947 @@ const { useState, useEffect } = React;
 // ─────────────────────────────────────────────────────────────────────────────
 
 const data = {
-  "leaders": [
+  leaders: [
     {
-      "name": "Hitler",
-      "status": "firm",
-      "papers": [
-        "P2 Auth",
-        "P3 WW2"
+      name: "Hitler",
+      status: "firm",
+      papers: ["P2 Auth", "P3 WW2"],
+      notes: null,
+      historiography: "Intentionalist vs Structuralist; Kershaw, Bullock, Mommsen",
+      suboutlines: [
+        {
+          name: "Rise to Power",
+          children: [
+            {
+              name: "Conditions",
+              children: [
+                { name: "Economic unrest" },
+                { name: "Political instability" },
+                { name: "Social Division" },
+                { name: "Impact of War" },
+              ],
+            },
+            {
+              name: "Methods",
+              children: [
+                { name: "Charisma" },
+                { name: "Violence" },
+                { name: "Propaganda" },
+                { name: "Mistakes by Rivals" },
+                { name: "Ideology" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "Consolidation",
+          children: [
+            {
+              name: "Methods",
+              children: [
+                { name: "Legal methods" },
+                { name: "Force" },
+                { name: "Charisma" },
+                { name: "Propaganda" },
+              ],
+            },
+            { name: "Treatment of opposition" },
+            { name: "Effects of Foreign Policy" },
+          ],
+        },
+        {
+          name: "Aims and Results of Policies",
+          children: [
+            { name: "Foreign" },
+            { name: "Control" },
+            {
+              name: "Domestic",
+              children: [
+                { name: "Political" },
+                { name: "Economic" },
+                { name: "Sociocultural" },
+                { name: "Minorities and Women" },
+              ],
+            },
+          ],
+        },
       ],
-      "notes": null,
-      "historiography": "Intentionalist vs Structuralist; Kershaw, Bullock, Mommsen",
-      "suboutlines": [
-        {
-          "name": "Rise to Power",
-          "children": [
-            {
-              "name": "Conditions",
-              "children": [
-                {
-                  "name": "Economic unrest"
-                },
-                {
-                  "name": "Political instability"
-                },
-                {
-                  "name": "Social Division"
-                },
-                {
-                  "name": "Impact of War"
-                }
-              ]
-            },
-            {
-              "name": "Methods",
-              "children": [
-                {
-                  "name": "Charisma"
-                },
-                {
-                  "name": "Violence"
-                },
-                {
-                  "name": "Propaganda"
-                },
-                {
-                  "name": "Mistakes by Rivals"
-                },
-                {
-                  "name": "Ideology"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Consolidation",
-          "children": [
-            {
-              "name": "Methods",
-              "children": [
-                {
-                  "name": "Legal methods"
-                },
-                {
-                  "name": "Force"
-                },
-                {
-                  "name": "Charisma"
-                },
-                {
-                  "name": "Propaganda"
-                }
-              ]
-            },
-            {
-              "name": "Treatment of opposition"
-            },
-            {
-              "name": "Effects of Foreign Policy"
-            }
-          ]
-        },
-        {
-          "name": "Aims and Results of Policies",
-          "children": [
-            {
-              "name": "Foreign"
-            },
-            {
-              "name": "Control"
-            },
-            {
-              "name": "Domestic",
-              "children": [
-                {
-                  "name": "Political"
-                },
-                {
-                  "name": "Economic"
-                },
-                {
-                  "name": "Sociocultural"
-                },
-                {
-                  "name": "Minorities and Women"
-                }
-              ]
-            }
-          ]
-        }
-      ]
     },
     {
-      "name": "Mussolini",
-      "status": "firm",
-      "papers": [
-        "P2 Auth"
-      ],
-      "notes": null,
-      "historiography": "De Felice's revisionism vs Bosworth; totalitarianism debate",
-      "suboutlines": [
+      name: "Mussolini",
+      status: "firm",
+      papers: ["P2 Auth"],
+      notes: null,
+      historiography: "De Felice's revisionism vs Bosworth; totalitarianism debate",
+      suboutlines: [
         {
-          "name": "Rise to Power",
-          "children": [
+          name: "Rise to Power",
+          children: [
             {
-              "name": "Conditions",
-              "children": [
+              name: "Conditions",
+              children: [
                 {
-                  "name": "Economic unrest",
-                  "content": [
+                  name: "Economic unrest",
+                  content: [
                     {
-                      "title": "Agrarian Issues",
-                      "bullets": [
-                        "Fascist Italy was characterised by a rapidly but unevenly industrialising society — the movement took hold in the rural hinterlands, not the industrial cities.",
-                        "Agricultural yields were uncompetitive; farmers shifted to cash crops such as sugar beet, causing Italy to import millions of tons of grain — leading to famine in 1919.",
+                      title: "Agrarian Issues",
+                      bullets: [
+                        "Fascist Italy was characterised by a rapidly but unevenly industrialising society \u2014 the movement took hold in the rural hinterlands, not the industrial cities.",
+                        "Agricultural yields were uncompetitive; farmers shifted to cash crops such as sugar beet, causing Italy to import millions of tons of grain \u2014 leading to famine in 1919.",
                         "Land distribution was deeply fractured: sharecroppers, free tenants, and early commercialised agriculture coexisted in conflict.",
-                        "Fascism exploited class conflicts between sharecroppers, small farmers, and landowners, promising to rectify agricultural chaos and fix famine."
-                      ]
+                        "Fascism exploited class conflicts between sharecroppers, small farmers, and landowners, promising to rectify agricultural chaos and fix famine.",
+                      ],
                     },
                     {
-                      "title": "Hyperinflation & Economic Crisis",
-                      "bullets": [
+                      title: "Hyperinflation & Economic Crisis",
+                      bullets: [
                         "Over a century of expensive wars and debt from rapid industrialisation, the Italian state had accumulated enormous growing debt by 1913.",
                         "Italy's wartime mobilisation relied on heavy printing and devaluing of the lira, creating 500% inflation.",
-                        "Italy mobilised 5 million soldiers, most of whom survived — immediately causing a gigantic unemployment crisis as millions re-entered the labour pool. 2 million unemployed.",
-                        "This produced the Two Red Years (Biennio Rosso), characterised by massive labour riots and strikes — upon which Fascism arose in reaction."
-                      ]
-                    }
-                  ]
+                        "Italy mobilised 5 million soldiers, most of whom survived \u2014 immediately causing a gigantic unemployment crisis as millions re-entered the labour pool. 2 million unemployed.",
+                        "This produced the Two Red Years (Biennio Rosso), characterised by massive labour riots and strikes \u2014 upon which Fascism arose in reaction.",
+                      ],
+                    },
+                  ],
                 },
                 {
-                  "name": "Political instability",
-                  "content": [
+                  name: "Political instability",
+                  content: [
                     {
-                      "title": "Biennio Rosso",
-                      "bullets": [
-                        "The political environment immediately prior to the March on Rome was defined by the Biennio Rosso — a period of massive instability and socialist expansion.",
+                      title: "Biennio Rosso",
+                      bullets: [
+                        "The political environment immediately prior to the March on Rome was defined by the Biennio Rosso \u2014 a period of massive instability and socialist expansion.",
                         "Socialist party membership exploded from 24,000 in 1918 to 216,337 by 1920. Trade unions grew from 600,000 to 2,200,000 in the same period.",
                         "In 1919 elections the Socialists grew from 17.62% to 32.28%, winning a plurality and threatening to take power through democracy.",
-                        "Demobilised soldiers, radicalised by the war, were drawn to the Socialists as paramilitary elements — 35 million work hours lost to organised union action."
-                      ]
+                        "Demobilised soldiers, radicalised by the war, were drawn to the Socialists as paramilitary elements \u2014 35 million work hours lost to organised union action.",
+                      ],
                     },
                     {
-                      "title": "Parliamentary Inaction",
-                      "bullets": [
+                      title: "Parliamentary Inaction",
+                      bullets: [
                         "The Liberal establishment, accustomed to ruling by decree, was woefully unequipped for mass politics after suffrage was recently introduced.",
-                        "They resorted to governing coalitions with the Catholics or Socialists — both of which were either unwilling or unable to provide stability.",
-                        "The Catholics sat in southern Italy; the Pope remained antagonised by events 50 years prior. The Socialists couldn't organise — radicals dissolved governments the moment they were elected.",
-                        "The Fascists, having some semblance of organisation, became one of the only parties the Liberals could actually form a viable coalition with."
-                      ]
-                    }
-                  ]
+                        "They resorted to governing coalitions with the Catholics or Socialists \u2014 both of which were either unwilling or unable to provide stability.",
+                        "The Catholics sat in southern Italy; the Pope remained antagonised by events 50 years prior. The Socialists couldn't organise \u2014 radicals dissolved governments the moment they were elected.",
+                        "The Fascists, having some semblance of organisation, became one of the only parties the Liberals could actually form a viable coalition with.",
+                      ],
+                    },
+                  ],
                 },
                 {
-                  "name": "Social Division",
-                  "content": [
+                  name: "Social Division",
+                  content: [
                     {
-                      "title": "Social Division",
-                      "bullets": [
-                        "Social divisions were extremely prominent in deeply divided Italian society — notably the North-South divide and the secular-Catholic divide.",
+                      title: "Social Division",
+                      bullets: [
+                        "Social divisions were extremely prominent in deeply divided Italian society \u2014 notably the North-South divide and the secular-Catholic divide.",
                         "Yet remarkably, they remained on the periphery of the unrest that characterised conditions during Mussolini's rise.",
-                        "While the northern half of the nation was in total uproar, the South remained near totally unaffected by the revolutionary tide — with the exception of Apulia.",
-                        "The Catholic-secular division also failed to ignite: the Catholics under the Pope chose to sit out the conflict rather than stoke the flames, despite joining politics in 1919."
-                      ]
-                    }
-                  ]
+                        "While the northern half of the nation was in total uproar, the South remained near totally unaffected by the revolutionary tide \u2014 with the exception of Apulia.",
+                        "The Catholic-secular division also failed to ignite: the Catholics under the Pope chose to sit out the conflict rather than stoke the flames, despite joining politics in 1919.",
+                      ],
+                    },
+                  ],
                 },
                 {
-                  "name": "Impact of War",
-                  "content": [
+                  name: "Impact of War",
+                  content: [
                     {
-                      "title": "Impact of War",
-                      "bullets": [
+                      title: "Impact of War",
+                      bullets: [
                         "The March on Rome came in the aftermath of WWI, in which Italy was a massive combatant.",
                         "Economically: Italy's wartime commitment relied on heavy printing and devaluing of the lira, creating 500% inflation. 2 million unemployed as demobilised soldiers re-entered the labour pool.",
                         "Socially: more than half a million Italians died fighting, and many more were wounded.",
-                        "Politically: Italy gained little in post-war negotiations, stoking the 'mutilated victory' sentiment — exemplified by D'Annunzio's seizure of Fiume."
-                      ]
-                    }
-                  ]
-                }
-              ]
+                        "Politically: Italy gained little in post-war negotiations, stoking the 'mutilated victory' sentiment \u2014 exemplified by D'Annunzio's seizure of Fiume.",
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
             {
-              "name": "Methods",
-              "children": [
+              name: "Methods",
+              children: [
+                { name: "Charisma" },
                 {
-                  "name": "Charisma"
-                },
-                {
-                  "name": "Violence",
-                  "content": [
+                  name: "Violence",
+                  content: [
                     {
-                      "title": "Violence & Squadrismo",
-                      "bullets": [
-                        "The Fascist movement's rise is almost completely characterised by extraordinary violence — not unusual in the broader political climate.",
+                      title: "Violence & Squadrismo",
+                      bullets: [
+                        "The Fascist movement's rise is almost completely characterised by extraordinary violence \u2014 not unusual in the broader political climate.",
                         "Founded as a reactionary 'combattimento' movement in response to massive socialist paramilitaries, the Fascists became a counter-socialist army in the rural hinterlands.",
-                        "The Squadristi took over the exact same coercive structures as the Socialists — electoral blocs, labour councils — just rebranded under a Fascist banner.",
-                        "The movement became so defined by violence that all semblance of coherent ideology was lost — a loose organisation of anti-socialists under a nominally Fascist name.",
-                        "The March on Rome itself — Mussolini's appointment as Prime Minister — was carried out by marching 40,000 Squadristi on the capital."
-                      ]
-                    }
-                  ]
+                        "The Squadristi took over the exact same coercive structures as the Socialists \u2014 electoral blocs, labour councils \u2014 just rebranded under a Fascist banner.",
+                        "The movement became so defined by violence that all semblance of coherent ideology was lost \u2014 a loose organisation of anti-socialists under a nominally Fascist name.",
+                        "The March on Rome itself \u2014 Mussolini's appointment as Prime Minister \u2014 was carried out by marching 40,000 Squadristi on the capital.",
+                      ],
+                    },
+                  ],
                 },
                 {
-                  "name": "Propaganda",
-                  "content": [
+                  name: "Propaganda",
+                  content: [
                     {
-                      "title": "Propaganda",
-                      "bullets": [
-                        "Mussolini began his career as a newspaper editor, commanding Avanti! — the newspaper of the Italian Socialists — before breaking with them.",
+                      title: "Propaganda",
+                      bullets: [
+                        "Mussolini began his career as a newspaper editor, commanding Avanti! \u2014 the newspaper of the Italian Socialists \u2014 before breaking with them.",
                         "After founding the Fascists, he established Il Popolo d'Italia, a major propaganda organ used to extol Fascism and fearmonger about Soviet Bolshevism.",
-                        "Propaganda served as an amplifier of the Fascist machine — presenting a ragtag paramilitary as an organised, disciplined force.",
-                        "This convinced Giolitti, the Pope, and the King himself that the Fascists were a credible governing force — directly enabling the March on Rome."
-                      ]
-                    }
-                  ]
+                        "Propaganda served as an amplifier of the Fascist machine \u2014 presenting a ragtag paramilitary as an organised, disciplined force.",
+                        "This convinced Giolitti, the Pope, and the King himself that the Fascists were a credible governing force \u2014 directly enabling the March on Rome.",
+                      ],
+                    },
+                  ],
                 },
                 {
-                  "name": "Mistakes by Rivals",
-                  "content": [
+                  name: "Mistakes by Rivals",
+                  content: [
                     {
-                      "title": "Mistakes by Rivals",
-                      "bullets": [
+                      title: "Mistakes by Rivals",
+                      bullets: [
                         "Fascism found its political niche by appearing slightly more competent than every other faction.",
-                        "The Socialists kept bragging about revolutionary change with no real results — unduly frightening the establishment while antagonising their own base.",
-                        "The Communists split the left's voter base by establishing the PCI — handing the Fascists a structural advantage.",
+                        "The Socialists kept bragging about revolutionary change with no real results \u2014 unduly frightening the establishment while antagonising their own base.",
+                        "The Communists split the left's voter base by establishing the PCI \u2014 handing the Fascists a structural advantage.",
                         "The monarchy capitulated to Mussolini with almost no resistance, based on undue fears of socialist revolution.",
-                        "The Catholics failed to act, and the Pope withdrew support from his own political party — letting the Fascists roll straight over them.",
-                        "The Liberals, unable to govern alone, needed a coalition partner with some organisational coherence — only the Fascists fit that description."
-                      ]
-                    }
-                  ]
+                        "The Catholics failed to act, and the Pope withdrew support from his own political party \u2014 letting the Fascists roll straight over them.",
+                        "The Liberals, unable to govern alone, needed a coalition partner with some organisational coherence \u2014 only the Fascists fit that description.",
+                      ],
+                    },
+                  ],
                 },
                 {
-                  "name": "Ideology",
-                  "content": [
+                  name: "Ideology",
+                  content: [
                     {
-                      "title": "Ideology",
-                      "bullets": [
-                        "The Fascist ideology was broadly defined by its lack of a coherent doctrine — which proved to be its greatest political strength.",
+                      title: "Ideology",
+                      bullets: [
+                        "The Fascist ideology was broadly defined by its lack of a coherent doctrine \u2014 which proved to be its greatest political strength.",
                         "Built on palingenetic ultranationalism incorporating Mazzinism, it appealed to virtually every Italian in some way.",
                         "It exploited discontent with Versailles and the 'mutilated victory', drawing on aesthetic visions of a revitalised Italy recalling the glory of Rome.",
-                        "Fundamentally opportunistic: Mussolini changed his positions constantly — shifting from left-wing radicalism to agrarianism to conservatism.",
-                        "This drew together syndicalists, futurists, farmers, landowners, soldiers, officers, and former socialists under one banner."
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
+                        "Fundamentally opportunistic: Mussolini changed his positions constantly \u2014 shifting from left-wing radicalism to agrarianism to conservatism.",
+                        "This drew together syndicalists, futurists, farmers, landowners, soldiers, officers, and former socialists under one banner.",
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
         {
-          "name": "Consolidation",
-          "children": [
+          name: "Consolidation",
+          children: [
             {
-              "name": "Methods",
-              "children": [
-                {
-                  "name": "Legal methods"
-                },
-                {
-                  "name": "Force"
-                },
-                {
-                  "name": "Charisma"
-                },
-                {
-                  "name": "Propaganda"
-                }
-              ]
+              name: "Methods",
+              children: [
+                { name: "Legal methods" },
+                { name: "Force" },
+                { name: "Charisma" },
+                { name: "Propaganda" },
+              ],
             },
-            {
-              "name": "Treatment of opposition"
-            },
-            {
-              "name": "Effects of Foreign Policy"
-            }
-          ]
+            { name: "Treatment of opposition" },
+            { name: "Effects of Foreign Policy" },
+          ],
         },
         {
-          "name": "Aims and Results of Policies",
-          "children": [
+          name: "Aims and Results of Policies",
+          children: [
+            { name: "Foreign" },
+            { name: "Control" },
             {
-              "name": "Foreign"
+              name: "Domestic",
+              children: [
+                { name: "Political" },
+                { name: "Economic" },
+                { name: "Sociocultural" },
+                { name: "Minorities and Women" },
+              ],
             },
-            {
-              "name": "Control"
-            },
-            {
-              "name": "Domestic",
-              "children": [
-                {
-                  "name": "Political"
-                },
-                {
-                  "name": "Economic"
-                },
-                {
-                  "name": "Sociocultural"
-                },
-                {
-                  "name": "Minorities and Women"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
     {
-      "name": "Castro",
-      "status": "firm",
-      "papers": [
-        "P2 Auth",
-        "P2 CW",
-        "P3 LatAm",
-        "P3 CW Americas"
+      name: "Castro",
+      status: "firm",
+      papers: ["P2 Auth", "P2 CW", "P3 LatAm", "P3 CW Americas"],
+      notes: null,
+      historiography: "Revisionist vs orthodox on revolution's character; Szulc, Quirk, Sweig",
+      suboutlines: [
+        {
+          name: "Rise to Power",
+          children: [
+            {
+              name: "Conditions",
+              children: [
+                { name: "Economic unrest" },
+                { name: "Political instability" },
+                { name: "Social Division" },
+                { name: "Impact of War" },
+              ],
+            },
+            {
+              name: "Methods",
+              children: [
+                { name: "Charisma" },
+                { name: "Guerilla Warfare" },
+                { name: "Propaganda" },
+                { name: "Mistakes by Rivals" },
+                { name: "Ideology" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "Consolidation",
+          children: [
+            {
+              name: "Methods",
+              children: [
+                { name: "Legal methods" },
+                { name: "Force" },
+                { name: "Charisma" },
+                { name: "Propaganda" },
+              ],
+            },
+            { name: "Treatment of opposition" },
+            { name: "Effects of Foreign Policy" },
+          ],
+        },
+        {
+          name: "Aims and Results of Policies",
+          children: [
+            { name: "Foreign" },
+            { name: "Control" },
+            {
+              name: "Domestic",
+              children: [
+                { name: "Political" },
+                { name: "Economic" },
+                { name: "Sociocultural" },
+                { name: "Minorities and Women" },
+              ],
+            },
+          ],
+        },
       ],
-      "notes": null,
-      "historiography": "Revisionist vs orthodox on revolution's character; Szulc, Quirk, Sweig",
-      "suboutlines": [
-        {
-          "name": "Rise to Power",
-          "children": [
-            {
-              "name": "Conditions",
-              "children": [
-                {
-                  "name": "Economic unrest"
-                },
-                {
-                  "name": "Political instability"
-                },
-                {
-                  "name": "Social Division"
-                },
-                {
-                  "name": "Impact of War"
-                }
-              ]
-            },
-            {
-              "name": "Methods",
-              "children": [
-                {
-                  "name": "Charisma"
-                },
-                {
-                  "name": "Guerilla Warfare"
-                },
-                {
-                  "name": "Propaganda"
-                },
-                {
-                  "name": "Mistakes by Rivals"
-                },
-                {
-                  "name": "Ideology"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Consolidation",
-          "children": [
-            {
-              "name": "Methods",
-              "children": [
-                {
-                  "name": "Legal methods"
-                },
-                {
-                  "name": "Force"
-                },
-                {
-                  "name": "Charisma"
-                },
-                {
-                  "name": "Propaganda"
-                }
-              ]
-            },
-            {
-              "name": "Treatment of opposition"
-            },
-            {
-              "name": "Effects of Foreign Policy"
-            }
-          ]
-        },
-        {
-          "name": "Aims and Results of Policies",
-          "children": [
-            {
-              "name": "Foreign"
-            },
-            {
-              "name": "Control"
-            },
-            {
-              "name": "Domestic",
-              "children": [
-                {
-                  "name": "Political"
-                },
-                {
-                  "name": "Economic"
-                },
-                {
-                  "name": "Sociocultural"
-                },
-                {
-                  "name": "Minorities and Women"
-                }
-              ]
-            }
-          ]
-        }
-      ]
     },
     {
-      "name": "Truman",
-      "status": "firm",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas"
-      ],
-      "notes": null,
-      "historiography": "Orthodox (Soviet aggression) vs Revisionist (US economic imperialism) vs Post-revisionist; Gaddis, Williams, Leffler",
-      "suboutlines": [
+      name: "Truman",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      notes: null,
+      historiography: "Orthodox (Soviet aggression) vs Revisionist (US economic imperialism) vs Post-revisionist; Gaddis, Williams, Leffler",
+      suboutlines: [
         {
-          "name": "Aims & Results of Foreign Policy",
-          "content": [
+          name: "Aims & Results of Foreign Policy",
+          content: [
             {
-              "title": "Conferences & Postwar Antagonism",
-              "bullets": [
-                "Truman's foreign policy immediately succeeding Roosevelt marked a sharp turnaround — from cooperative wartime alliance to confrontation.",
+              title: "Conferences & Postwar Antagonism",
+              bullets: [
+                "Truman's foreign policy immediately succeeding Roosevelt marked a sharp turnaround \u2014 from cooperative wartime alliance to confrontation.",
                 "At Potsdam, an initially warm meeting deteriorated; Truman went tough on the Soviets, culminating in a heated confrontation with Molotov.",
                 "By 1946, following the Long Telegram and Churchill's Iron Curtain speech, Truman moved the US into formal opposition to the Soviet Union.",
                 "The 1947 Truman Doctrine formally broke down the Grand Alliance, outlining US opposition to Soviet expansion globally.",
-                "Truman backed the creation of Israel, being the first to recognise the nascent state — aggravating the Arabs and adding a further regional flashpoint."
-              ]
+                "Truman backed the creation of Israel, being the first to recognise the nascent state \u2014 aggravating the Arabs and adding a further regional flashpoint.",
+              ],
             },
             {
-              "title": "Containment, Marshall Plan, NATO & Berlin Blockade",
-              "bullets": [
-                "The Truman Doctrine pledged support for pro-Western governments of Greece and Turkey — the first concrete application of containment.",
+              title: "Containment, Marshall Plan, NATO & Berlin Blockade",
+              bullets: [
+                "The Truman Doctrine pledged support for pro-Western governments of Greece and Turkey \u2014 the first concrete application of containment.",
                 "The Marshall Plan (1947) aimed to establish political and economic stability in Europe, reducing the attraction of communism.",
-                "Truman led the push for unification of British and American occupation zones into Bizonia (1948), then Trizonia with France — forming West Germany in 1949.",
-                "The Soviets responded with the Berlin Blockade — the first major Cold War crisis. Stalin ultimately backed down, but no compromise on Germany was reached.",
-                "NATO (1949) was formed as a defensive bloc against the Soviet Union, directly in response to the Czechoslovakian coup and the Berlin crisis."
-              ]
+                "Truman led the push for unification of British and American occupation zones into Bizonia (1948), then Trizonia with France \u2014 forming West Germany in 1949.",
+                "The Soviets responded with the Berlin Blockade \u2014 the first major Cold War crisis. Stalin ultimately backed down, but no compromise on Germany was reached.",
+                "NATO (1949) was formed as a defensive bloc against the Soviet Union, directly in response to the Czechoslovakian coup and the Berlin crisis.",
+              ],
             },
             {
-              "title": "China, Soviet Bomb & Korea",
-              "bullets": [
-                "By 1949 the communists had forced the Nationalists off the mainland — a second breach of containment after Czechoslovakia.",
+              title: "China, Soviet Bomb & Korea",
+              bullets: [
+                "By 1949 the communists had forced the Nationalists off the mainland \u2014 a second breach of containment after Czechoslovakia.",
                 "The Soviet Union broke the American nuclear monopoly, countermanding Truman's proposal for UN-supervised nuclearisation.",
-                "In response, Truman passed NSC-68, massively re-expanding military expenditure and political powers in relation to the military — ending four years of demilitarisation.",
-                "NSC-68 and the National Security Council stoked domestic fervour and anti-communist sentiment — directly enabling McCarthyism and the Red Scare.",
-                "The invasion of South Korea by Kim Il-Sung led Truman to commit to total war — stopping another breach of containment at any cost."
-              ]
+                "In response, Truman passed NSC-68, massively re-expanding military expenditure and political powers in relation to the military \u2014 ending four years of demilitarisation.",
+                "NSC-68 and the National Security Council stoked domestic fervour and anti-communist sentiment \u2014 directly enabling McCarthyism and the Red Scare.",
+                "The invasion of South Korea by Kim Il-Sung led Truman to commit to total war \u2014 stopping another breach of containment at any cost.",
+              ],
             },
             {
-              "title": "Containment in Latin America",
-              "bullets": [
-                "Focused on military alliances and keeping communism out — the Rio Treaty (1947) designed to prevent revolutionary states from emerging.",
+              title: "Containment in Latin America",
+              bullets: [
+                "Focused on military alliances and keeping communism out \u2014 the Rio Treaty (1947) designed to prevent revolutionary states from emerging.",
                 "The 1951 Mutual Security Act authorised military aid to 8 countries including Brazil, Chile, and Batista's Cuba.",
-                "Continued to support American-backed strongmen — Batista, Somoza, Trujillo — to prevent the emergence of communist states.",
+                "Continued to support American-backed strongmen \u2014 Batista, Somoza, Trujillo \u2014 to prevent the emergence of communist states.",
                 "OAS (Organisation of American States) established as a framework for regional solidarity against communism.",
                 "Extremely minimal economic aid: $22 million to Latin America vs. $1.6 billion to Europe.",
-                "Covert activities conducted in Brazil, Mexico, and Cuba against ostensibly communist or left-wing agitators."
-              ]
-            }
-          ]
+                "Covert activities conducted in Brazil, Mexico, and Cuba against ostensibly communist or left-wing agitators.",
+              ],
+            },
+          ],
         },
-        {
-          "name": "Results of Domestic Policy"
-        }
-      ]
+        { name: "Results of Domestic Policy" },
+      ],
     },
     {
-      "name": "Eisenhower",
-      "status": "firm",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas"
+      name: "Eisenhower",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      notes: null,
+      historiography: "Eisenhower revisionism (hidden-hand presidency); Ambrose, Immerman",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
       ],
-      "notes": null,
-      "historiography": "Eisenhower revisionism (hidden-hand presidency); Ambrose, Immerman",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        }
-      ]
     },
     {
-      "name": "Khrushchev",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
+      name: "Khrushchev",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Taubman, Zubok; debate on sincerity of peaceful coexistence",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
       ],
-      "notes": null,
-      "historiography": "Taubman, Zubok; debate on sincerity of peaceful coexistence",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        },
-        {
-          "name": "Results of Domestic Policy"
-        }
-      ]
     },
     {
-      "name": "Kennedy",
-      "status": "firm",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas"
+      name: "Kennedy",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      notes: null,
+      historiography: "Camelot myth vs revisionism; Freedman on CMC, Rabe on Latin America",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
       ],
-      "notes": null,
-      "historiography": "Camelot myth vs revisionism; Freedman on CMC, Rabe on Latin America",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        },
-        {
-          "name": "Results of Domestic Policy"
-        }
-      ]
     },
     {
-      "name": "Johnson",
-      "status": "firm",
-      "papers": [
-        "P3 CW Americas"
+      name: "Johnson",
+      status: "firm",
+      papers: ["P3 CW Americas"],
+      notes: null,
+      historiography: "Logevall on missed off-ramps; credibility gap debate",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
       ],
-      "notes": null,
-      "historiography": "Logevall on missed off-ramps; credibility gap debate",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        }
-      ]
     },
     {
-      "name": "Nixon",
-      "status": "firm",
-      "papers": [
-        "P3 CW Americas",
-        "P2 CW"
+      name: "Nixon",
+      status: "firm",
+      papers: ["P3 CW Americas", "P2 CW"],
+      notes: null,
+      historiography: "Dallek, Hanhim\u00e4ki on d\u00e9tente; debate on realism vs cynicism",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
       ],
-      "notes": null,
-      "historiography": "Dallek, Hanhimäki on détente; debate on realism vs cynicism",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        }
-      ]
     },
     {
-      "name": "Reagan",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
+      name: "Reagan",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Triumphalist vs revisionist on Cold War ending; Fischer, Garthoff",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
       ],
-      "notes": null,
-      "historiography": "Triumphalist vs revisionist on Cold War ending; Fischer, Garthoff",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        }
-      ]
     },
     {
-      "name": "Gorbachev",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
+      name: "Gorbachev",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Brown on Gorbachev's agency; Kotkin on structural collapse; Zubok",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
       ],
-      "notes": null,
-      "historiography": "Brown on Gorbachev's agency; Kotkin on structural collapse; Zubok",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        },
-        {
-          "name": "Results of Domestic Policy"
-        }
-      ]
     },
     {
-      "name": "Allende",
-      "status": "firm",
-      "papers": [
-        "P3 LatAm",
-        "P3 CW Americas"
+      name: "Allende",
+      status: "firm",
+      papers: ["P3 LatAm", "P3 CW Americas"],
+      notes: null,
+      historiography: "Kornbluh (declassified docs); debate on internal vs external causes of failure",
+      suboutlines: [
+        { name: "Aims and Results of Policies" },
+        { name: "Failure of Democracy" },
+        { name: "Rise to power" },
+        { name: "Treatment of Opposition" },
       ],
-      "notes": null,
-      "historiography": "Kornbluh (declassified docs); debate on internal vs external causes of failure",
-      "suboutlines": [
-        {
-          "name": "Aims and Results of Policies"
-        },
-        {
-          "name": "Failure of Democracy"
-        },
-        {
-          "name": "Rise to power"
-        },
-        {
-          "name": "Treatment of Opposition"
-        }
-      ]
     },
     {
-      "name": "Pinochet",
-      "status": "firm",
-      "papers": [
-        "P3 LatAm"
+      name: "Pinochet",
+      status: "firm",
+      papers: ["P3 LatAm"],
+      notes: null,
+      historiography: "Constable & Valenzuela; Harmer on Cold War dimension; memory politics",
+      suboutlines: [
+        { name: "Rise to power" },
+        { name: "Treatment of opposition" },
+        { name: "Aims and results of policies" },
       ],
-      "notes": null,
-      "historiography": "Constable & Valenzuela; Harmer on Cold War dimension; memory politics",
-      "suboutlines": [
-        {
-          "name": "Rise to power"
-        },
-        {
-          "name": "Treatment of opposition"
-        },
-        {
-          "name": "Aims and results of policies"
-        }
-      ]
     },
     {
-      "name": "Goulart",
-      "status": "firm",
-      "papers": [
-        "P3 LatAm"
+      name: "Goulart",
+      status: "firm",
+      papers: ["P3 LatAm"],
+      notes: null,
+      historiography: "Green on US involvement; Skidmore on Brazilian politics",
+      suboutlines: [
+        { name: "Aims and Results of policies" },
+        { name: "Failure of Democracy" },
       ],
-      "notes": null,
-      "historiography": "Green on US involvement; Skidmore on Brazilian politics",
-      "suboutlines": [
-        {
-          "name": "Aims and Results of policies"
-        },
-        {
-          "name": "Failure of Democracy"
-        }
-      ]
     },
     {
-      "name": "Brezhnev",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
+      name: "Brezhnev",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Zubok, Westad; debate on whether d\u00e9tente was genuine or tactical",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
       ],
-      "notes": null,
-      "historiography": "Zubok, Westad; debate on whether détente was genuine or tactical",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        }
-      ]
     },
     {
-      "name": "De Gaulle",
-      "status": "provisional",
-      "papers": [
-        "P2 CW"
+      name: "De Gaulle",
+      status: "provisional",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Lacouture; Cold War multipolarity",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
       ],
-      "notes": null,
-      "historiography": "Lacouture; Cold War multipolarity",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        },
-        {
-          "name": "Results of Domestic Policy"
-        }
-      ]
     },
     {
-      "name": "Adenauer",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
+      name: "Adenauer",
+      status: "firm",
+      papers: ["P2 CW"],
+      notes: null,
+      historiography: "Schwarz; debate on Adenauer\u2019s agency vs structural constraints",
+      suboutlines: [
+        { name: "Aims & Results of Foreign Policy" },
+        { name: "Results of Domestic Policy" },
       ],
-      "notes": null,
-      "historiography": "Schwarz; debate on Adenauer’s agency vs structural constraints",
-      "suboutlines": [
-        {
-          "name": "Aims & Results of Foreign Policy"
-        },
-        {
-          "name": "Results of Domestic Policy"
-        }
-      ]
-    }
+    },
   ],
-  "crises": [
+  crises: [
     {
-      "name": "Korean War",
-      "status": "firm",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas"
-      ],
-      "causes": [
+      name: "Korean War",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      causes: [
         {
-          "title": "Korean War as a Civil War",
-          "bullets": [
+          title: "Korean War as a Civil War",
+          bullets: [
             "The origins of the Cold War itself were internally driven by conflicts between the divided Koreas.",
             "Although the division was a result of superpower rivalries, by 1950 the two Koreas were pretty much autonomous states from their backers.",
             "Both Koreas, under nationalist strongmen (Syngman Rhee, Kim Il Sung), were pushing heavy rhetoric for reunification under their respective states.",
             "Between 1948 and 1950, border conflicts had already escalated to major skirmishes between both states.",
             "The North Korean action can be clearly attributed to the personal desires of Kim Il Sung, rather than the Soviet Union, as Kim petitioned for invasion multiple times with Stalin refusing, and Stalin only agreed reluctantly, refusing to commit forces.",
-            "This is further evidenced by Kim Il Sung’s domestic justification of the war, as induced by domestic weakness and uprising in Rhee’s Korea.",
+            "This is further evidenced by Kim Il Sung\u2019s domestic justification of the war, as induced by domestic weakness and uprising in Rhee\u2019s Korea.",
             "Kim Il Sung saw the Japanese-dominated Rhee Korea as weak/illegitimate.",
-            "Therefore, the Korean War was a domestic phenomenon that expanded."
-          ]
+            "Therefore, the Korean War was a domestic phenomenon that expanded.",
+          ],
         },
         {
-          "title": "American Escalation",
-          "bullets": [
-            "However, the civil war itself was not necessarily a Cold War crisis, until South Korea’s superpower backer, the United States got involved — escalating the war to a true Cold War crisis.",
+          title: "American Escalation",
+          bullets: [
+            "However, the civil war itself was not necessarily a Cold War crisis, until South Korea\u2019s superpower backer, the United States got involved \u2014 escalating the war to a true Cold War crisis.",
             "This escalation entailed the deployment of 1.8 million troops to Korea, a 4-fold expansion of US military budget, the movement of US naval forces, and massive bombing campaigns by the USAF, escalating the war to total war, and even potentially nuclear war.",
             "Such action was taken under the broader framework of containment, as a response to the perceived domino theory in the opening stages of the Cold War, especially after the loss of China and the Soviet nuclear tests, both events only mere months earlier.",
             "Moreover, it was further driven by domestic factors in the United States.",
             "Senator Joseph McCarthy began his relentless attack months earlier.",
             "Truman already unpopular after losing China, therefore had to respond otherwise his administration would be in the gutter.",
-            "Hence, the Korean War as a crisis can be characterised as caused by the rising nascent Cold War tensions, especially in the United States."
-          ]
+            "Hence, the Korean War as a crisis can be characterised as caused by the rising nascent Cold War tensions, especially in the United States.",
+          ],
         },
         {
-          "title": "Chinese and Soviet Involvement",
-          "bullets": [
-            "Yet the Chinese response — which was to march millions across the Yalu — was not a given, as the Korean War was the first Cold War proxy war.",
+          title: "Chinese and Soviet Involvement",
+          bullets: [
+            "Yet the Chinese response \u2014 which was to march millions across the Yalu \u2014 was not a given, as the Korean War was the first Cold War proxy war.",
             "Where the American involvement can be clearly attributed to Cold War tensions, the Chinese response is more characteristic of Chinese domestic goals.",
-            "From a Chinese perspective, the American intervention threatened China, especially with Douglas MacArthur’s bombing of Chinese territory (Yalu River) and threats of nuclear weapons.",
+            "From a Chinese perspective, the American intervention threatened China, especially with Douglas MacArthur\u2019s bombing of Chinese territory (Yalu River) and threats of nuclear weapons.",
             "Moreover, it gave the Chinese government an opportunity to consolidate domestic power, by sending former KMT veterans to Korea, and spurring nationalist sentiment through the foreign war.",
             "Additionally, it came as a result of Chinese historical and contemporary alliance with North Korea, which further drove the Chinese to support their ally.",
             "This independent motivation for Chinese involvement is further evidenced by the lack of Soviet response, aside from Soviet airmen.",
-            "Therefore, the Korean War cannot be fully characterised by Cold War tensions, given the individual motivations of China as a third power."
-          ]
-        }
+            "Therefore, the Korean War cannot be fully characterised by Cold War tensions, given the individual motivations of China as a third power.",
+          ],
+        },
       ],
-      "impact": [
+      impact: [
         {
-          "title": "Trends for Superpower Rivalry",
-          "bullets": [
+          title: "Trends for Superpower Rivalry",
+          bullets: [
             "Prior to the Korean War, although the United States and the Soviet Union were opposed on several issues, especially China, they saw no actual conflict.",
             "The Korean War represented the first instance where Soviet troops (airmen) fought against their former American allies.",
-            "It brought both powers closer to the nuclear brink, after MacArthur’s threats and the Soviet response.",
-            "In many ways it represents the true beginning of the Cold War — where the Cold War was escalated by the rapid militarisation of both superpowers, and brought across the world from the postwar European ideological battleground.",
+            "It brought both powers closer to the nuclear brink, after MacArthur\u2019s threats and the Soviet response.",
+            "In many ways it represents the true beginning of the Cold War \u2014 where the Cold War was escalated by the rapid militarisation of both superpowers, and brought across the world from the postwar European ideological battleground.",
             "Stalin sends 17,362 rifles and carbines, 5,816 sub-machine-guns, 268 mortars and 234 artillery pieces.",
             "Led to West German rearmament under Pleven Plan/European Defence Community, viewed as essential to strengthen the defences of western Europe (but was limited, only allowed battalions not divisions).",
-            "Set the trend of a weak UN — only 10% of troops came from the UN. USSR basically crippled the Security Council after this incident."
-          ]
+            "Set the trend of a weak UN \u2014 only 10% of troops came from the UN. USSR basically crippled the Security Council after this incident.",
+          ],
         },
         {
-          "title": "Domestic Results in the US",
-          "bullets": [
-            "Reversed the postwar demilitarisation, especially the peace dividend — increased US military spending from $13bn to $50bn, NSC-68 taken seriously → military-industrial complex becomes a key political power in domestic US politics.",
+          title: "Domestic Results in the US",
+          bullets: [
+            "Reversed the postwar demilitarisation, especially the peace dividend \u2014 increased US military spending from $13bn to $50bn, NSC-68 taken seriously \u2192 military-industrial complex becomes a key political power in domestic US politics.",
             "Draft reintroduced, US defence policy began to take an active role, military bases around the world in all theatres.",
             "Supercharged anticommunism, red scare, McCarthyism became overwhelmingly dominant force; containment and intervention became supported bipartisan.",
             "HUAC, Rosenberg trials during Korean War.",
             "Eroded congressional power, as Truman declared war through police action, yet Truman himself loses political favour to MacArthur, paved the way for a Republican presidency (popularity plummeted to around 25%).",
-            "Stimulated American economy, massive spending, accelerated desegregation in the military as mixed units fought together, expanded GI Bill effects → inflationary 20% inflation at start of war, controlled by government intervention (Revenue Act of 1951, price controls).",
-            "The heavy-handed economic approach was not popular, hence led to Eisenhower’s brinksmanship and New Look."
-          ]
+            "Stimulated American economy, massive spending, accelerated desegregation in the military as mixed units fought together, expanded GI Bill effects \u2192 inflationary 20% inflation at start of war, controlled by government intervention (Revenue Act of 1951, price controls).",
+            "The heavy-handed economic approach was not popular, hence led to Eisenhower\u2019s brinksmanship and New Look.",
+          ],
         },
         {
-          "title": "Effect on the Koreas",
-          "bullets": [
+          title: "Effect on the Koreas",
+          bullets: [
             "More bombs dropped on the Koreas than during the entire Pacific War on Japan.",
             "Korea gets permanently divided along the 38th parallel and a Demilitarised Zone is set up.",
             "Up to 5 million people died (600k Chinese, 50k American, and a lot of Koreans).",
-            "Left South Korea as one of the poorest nations in the world — 1953 per-capita production at 44% below 1940 levels.",
-            "Eliminated North Korea’s industrial base. By 1953, 44% of factory buildings and 42% of production facilities were in ruins."
-          ]
-        }
+            "Left South Korea as one of the poorest nations in the world \u2014 1953 per-capita production at 44% below 1940 levels.",
+            "Eliminated North Korea\u2019s industrial base. By 1953, 44% of factory buildings and 42% of production facilities were in ruins.",
+          ],
+        },
       ],
-      "leaderLinks": [
-        "Truman",
-        "Eisenhower",
-        "Khrushchev"
-      ],
-      "leaderContent": [
+      leaderLinks: ["Truman", "Eisenhower", "Khrushchev"],
+      leaderContent: [
         {
-          "name": "Truman",
-          "bullets": [
-            "Underlying American involvement in the Korean War is Truman’s policy of containment.",
+          name: "Truman",
+          bullets: [
+            "Underlying American involvement in the Korean War is Truman\u2019s policy of containment.",
             "After the massive failure in containment that China represented, Korea was the next on the list and here, we saw Truman stop accepting the loss of states to communism, reacting extremely.",
-            "Domestically, this represents a significant turnaround, where Truman steered America in the opposite direction from demilitarisation and the peace dividend to entering the Cold War."
-          ]
-        }
-      ]
+            "Domestically, this represents a significant turnaround, where Truman steered America in the opposite direction from demilitarisation and the peace dividend to entering the Cold War.",
+          ],
+        },
+      ],
     },
     {
-      "name": "Suez Crisis",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
-      ],
-      "causes": [
-        {
-          "title": "French miscalculation",
-          "bullets": []
-        }
-      ],
-      "impact": "Humiliation of Britain/France; US/USSR as true superpowers confirmed; precedent for Cold War in Middle East; non-alignment strengthened",
-      "leaderLinks": [
-        "Eisenhower",
-        "Khrushchev"
-      ],
-      "leaderContent": null
+      name: "Suez Crisis",
+      status: "firm",
+      papers: ["P2 CW"],
+      causes: "Nasser\u2019s nationalisation of canal; Anglo-French-Israeli collusion; Cold War competition in Middle East; decolonisation context",
+      impact: "Humiliation of Britain/France; US/USSR as true superpowers confirmed; precedent for Cold War in Middle East; non-alignment strengthened",
+      leaderLinks: ["Eisenhower", "Khrushchev"],
+      leaderContent: null,
     },
     {
-      "name": "Cuban Missile Crisis",
-      "status": "firm",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas"
-      ],
-      "causes": [
+      name: "Cuban Missile Crisis",
+      status: "firm",
+      papers: ["P2 CW", "P3 CW Americas"],
+      causes: [
         {
-          "title": "Castro’s Cuba",
-          "bullets": [
-            "In some ways, the Cuban Missile Crisis was very much centred around Castro’s Cuba, and its tenuous relations with the United States, and less so the Soviet Union’s backing.",
+          title: "Castro\u2019s Cuba",
+          bullets: [
+            "In some ways, the Cuban Missile Crisis was very much centred around Castro\u2019s Cuba, and its tenuous relations with the United States, and less so the Soviet Union\u2019s backing.",
             "By the time of the crisis, the nascent Cuban state was only 3 years old.",
             "It was beset by enemies within, loyalists to the old regime, along with other dissidents.",
-            "Additionally, a belligerent Castro had antagonised the United States, leading to the Bay of Pigs invasion — a US-backed invasion by Cuban exiles, and Operation Mongoose.",
+            "Additionally, a belligerent Castro had antagonised the United States, leading to the Bay of Pigs invasion \u2014 a US-backed invasion by Cuban exiles, and Operation Mongoose.",
             "This was compounded by nationalisations of US property on the Cuban side, and oil embargo + sanctions from the American side.",
-            "For Castro’s Cuba, it represents a final reaction to the Bay of Pigs, where the previously at least on the surface ambivalent revolutionary government chose the communist camp as a means of protection and stability.",
-            "This is indeed evidenced by Cuba’s proactive role in the crisis — Cuba requesting the missiles, Cuba requesting escalation, and Castro himself even requesting nuclear exchange."
-          ]
+            "For Castro\u2019s Cuba, it represents a final reaction to the Bay of Pigs, where the previously at least on the surface ambivalent revolutionary government chose the communist camp as a means of protection and stability.",
+            "This is indeed evidenced by Cuba\u2019s proactive role in the crisis \u2014 Cuba requesting the missiles, Cuba requesting escalation, and Castro himself even requesting nuclear exchange.",
+          ],
         },
         {
-          "title": "United States",
-          "bullets": [
+          title: "United States",
+          bullets: [
             "Yet, the Cuban Missile Crisis is after all triggered by the American response to the missiles.",
-            "Such can be traced back earlier to Eisenhower’s New Look and nuclear brinkmanship, along with the Dulles brothers.",
-            "As head of the CIA, the younger Dulles orchestrated the Bay of Pigs invasion, with Kennedy’s very reluctant approval.",
+            "Such can be traced back earlier to Eisenhower\u2019s New Look and nuclear brinkmanship, along with the Dulles brothers.",
+            "As head of the CIA, the younger Dulles orchestrated the Bay of Pigs invasion, with Kennedy\u2019s very reluctant approval.",
             "As Secretary of State, the elder Dulles was behind the installation of missiles in Turkey and Italy, and the massive expansion of the US nuclear program under massive retaliation, maintaining a near 20:1 ratio over bombs over the Soviet Union.",
             "This can broadly be examined as a period of American belligerency, where in succession we have the U2 incident, installation of missiles thereafter, and finally the Soviet reaction here.",
-            "The events of the crisis further indicate US belligerency, where the US committed an act of war against Cuba (the blockade), escalated — despite the Soviet installation only representing a response in kind by the Soviet Union."
-          ]
+            "The events of the crisis further indicate US belligerency, where the US committed an act of war against Cuba (the blockade), escalated \u2014 despite the Soviet installation only representing a response in kind by the Soviet Union.",
+          ],
         },
         {
-          "title": "Soviet Union",
-          "bullets": [
+          title: "Soviet Union",
+          bullets: [
             "However, the Cuban Missile Crisis can also be attributed to the Soviet Union finally dropping peaceful coexistence.",
-            "As discussed earlier, the crisis occurred with the backdrop of the U2 incident, which put a halt to increasing détente.",
+            "As discussed earlier, the crisis occurred with the backdrop of the U2 incident, which put a halt to increasing d\u00e9tente.",
             "Moreover, it came following the unresolved Berlin crisis, and increasing influence of Soviet hardliners.",
             "The actions taken by the Soviet Union, albeit responding in kind, represent the nullification of peaceful coexistence.",
-            "By supporting Cuba with nuclear weapons, the Soviet Union was clearly seeking to expand its influence to Latin America, moving into the US’s backyard — Monroe Doctrine.",
+            "By supporting Cuba with nuclear weapons, the Soviet Union was clearly seeking to expand its influence to Latin America, moving into the US\u2019s backyard \u2014 Monroe Doctrine.",
             "Moreover, the nuclear weapons represent a Soviet shift to brinkmanship as well, further escalating tensions.",
-            "Therefore, it cannot singularly be characterised in reference to superpower rivalries as an American move, as it was also a conscious Soviet move to escalate rising tensions."
-          ]
-        }
+            "Therefore, it cannot singularly be characterised in reference to superpower rivalries as an American move, as it was also a conscious Soviet move to escalate rising tensions.",
+          ],
+        },
       ],
-      "impact": [
+      impact: [
         {
-          "title": "Superpower Rivalries & Tensions",
-          "bullets": [
-            "Fortunately, the Cuban Missile Crisis ended in de-escalation — both the Soviet Union and the United States backed down, to the irritation of Fidel Castro.",
-            "Hence, the impacts of the crisis are largely characterised by détente between the two powers, moving away from brinkmanship — especially the nuclear kind.",
-            "In 1963, the Moscow–Washington hotline was established, allowing for faster de-escalation of budding crises.",
+          title: "Superpower Rivalries & Tensions",
+          bullets: [
+            "Fortunately, the Cuban Missile Crisis ended in de-escalation \u2014 both the Soviet Union and the United States backed down, to the irritation of Fidel Castro.",
+            "Hence, the impacts of the crisis are largely characterised by d\u00e9tente between the two powers, moving away from brinkmanship \u2014 especially the nuclear kind.",
+            "In 1963, the Moscow\u2013Washington hotline was established, allowing for faster de-escalation of budding crises.",
             "This was shortly followed by the Partial Nuclear Test Ban, committed to bring the world further away from the brink.",
             "Moreover, it signalled a new phase of the Cold War, where the concept of MAD entered the forefront, moving away from direct confrontation towards proxy conflicts.",
-            "Additionally, it strengthened the non-aligned movement, especially those not under a nuclear umbrella."
-          ]
+            "Additionally, it strengthened the non-aligned movement, especially those not under a nuclear umbrella.",
+          ],
         },
         {
-          "title": "For the USSR",
-          "bullets": [
-            "Embarrassed Khrushchev — two failures in a row (Berlin prior), as the results were terrible for the Soviet Union: publicly, the Soviets backed down with no results.",
-            "This was because the removal of American missiles from Italy and Turkey was secret, along with the promises secured on Cuba’s behalf.",
-            "It further weakened the Soviet Union’s prestige in the communist bloc, especially with China, accelerating China as a third power and the Sino-Soviet split.",
+          title: "For the USSR",
+          bullets: [
+            "Embarrassed Khrushchev \u2014 two failures in a row (Berlin prior), as the results were terrible for the Soviet Union: publicly, the Soviets backed down with no results.",
+            "This was because the removal of American missiles from Italy and Turkey was secret, along with the promises secured on Cuba\u2019s behalf.",
+            "It further weakened the Soviet Union\u2019s prestige in the communist bloc, especially with China, accelerating China as a third power and the Sino-Soviet split.",
             "As a response, the Soviets began massive nuclear expansion, attempting to reach true parity while the US backed away from brinkmanship.",
-            "Although de-escalating, the Soviet Union gave up on peaceful coexistence henceforth, as its proponent was ousted — Khrushchev couped in 1964."
-          ]
+            "Although de-escalating, the Soviet Union gave up on peaceful coexistence henceforth, as its proponent was ousted \u2014 Khrushchev couped in 1964.",
+          ],
         },
         {
-          "title": "For the United States",
-          "bullets": [
+          title: "For the United States",
+          bullets: [
             "Domestically and internationally, the Cuban Missile Crisis was seen as a massive success for the United States, where the Soviet Union was forced to back down once again (again secret agreements).",
             "Moreover, it confirmed shifting American doctrine, where the importance of conventional engagement was once again reemphasised.",
-            "Additionally, it gave credence to a new (or really old) form of “cheap” intervention, where gunboat diplomacy was once again reestablished as an easy, cost-effective means of dealing with crises.",
-            "These lessons would be employed heavily in Latin America and elsewhere, curbing further communist encroachments — Operation Brother Sam 1964, Dominican Republic 1965, and the Gulf of Tonkin incident triggering the Vietnam War.",
+            "Additionally, it gave credence to a new (or really old) form of \u201ccheap\u201d intervention, where gunboat diplomacy was once again reestablished as an easy, cost-effective means of dealing with crises.",
+            "These lessons would be employed heavily in Latin America and elsewhere, curbing further communist encroachments \u2014 Operation Brother Sam 1964, Dominican Republic 1965, and the Gulf of Tonkin incident triggering the Vietnam War.",
             "Reinforced belief in containment at least in the Americas along with Monroe Doctrine.",
-            "Conversely, public feared nuclearisation and America halted nuclear brinkmanship."
-          ]
+            "Conversely, public feared nuclearisation and America halted nuclear brinkmanship.",
+          ],
         },
         {
-          "title": "For Cuba",
-          "bullets": [
+          title: "For Cuba",
+          bullets: [
             "Gained a formal US pledge to not invade, which the US has followed to this date.",
-            "However, covert operations were unaffected — Operation Mongoose continued, along with sanctions and blockade.",
-            "Worsened Cuban-Soviet relations — Cuba was excluded from the negotiations, yet Cuba still dependent as the Western bloc drew away.",
+            "However, covert operations were unaffected \u2014 Operation Mongoose continued, along with sanctions and blockade.",
+            "Worsened Cuban-Soviet relations \u2014 Cuba was excluded from the negotiations, yet Cuba still dependent as the Western bloc drew away.",
             "Cuba gained prestige, seen as being able to fend off the United States, especially amongst other communist states and the non-aligned movement.",
-            "Stabilised the nascent regime, allowing Cuba to deal with domestic issues and consolidate power."
-          ]
-        }
+            "Stabilised the nascent regime, allowing Cuba to deal with domestic issues and consolidate power.",
+          ],
+        },
       ],
-      "leaderLinks": [
-        "Kennedy",
-        "Khrushchev",
-        "Castro"
-      ],
-      "leaderContent": [
+      leaderLinks: ["Kennedy", "Khrushchev", "Castro"],
+      leaderContent: [
         {
-          "name": "Castro",
-          "bullets": [
-            "Castro’s involvement with the Cuban Missile Crisis is largely the same as the Cuban state — after all he was the authoritarian leader of the Cuban state.",
+          name: "Castro",
+          bullets: [
+            "Castro\u2019s involvement with the Cuban Missile Crisis is largely the same as the Cuban state \u2014 after all he was the authoritarian leader of the Cuban state.",
             "Castro directly instigated most of the events, personally requesting the nuclear missiles, requesting first strike in the event of American invasion, and he commanded the downing of an American U2.",
             "However, he was sidelined once it escalated to a superpower crisis, excluded from both the escalation and negotiations.",
-            "Yet arguably, he came out on top as a result of the crisis — a successful foreign policy result, aiding domestic consolidation.",
-            "He earned significant prestige for both himself and the state, staved off American invasion, earned Cuba a strong Soviet backer who would bankroll the state."
-          ]
+            "Yet arguably, he came out on top as a result of the crisis \u2014 a successful foreign policy result, aiding domestic consolidation.",
+            "He earned significant prestige for both himself and the state, staved off American invasion, earned Cuba a strong Soviet backer who would bankroll the state.",
+          ],
         },
         {
-          "name": "Khrushchev",
-          "bullets": [
-            "In contrast, Khrushchev’s involvement with the Cuban Missile Crisis is somewhat detached from the Soviet Union’s policies and response.",
+          name: "Khrushchev",
+          bullets: [
+            "In contrast, Khrushchev\u2019s involvement with the Cuban Missile Crisis is somewhat detached from the Soviet Union\u2019s policies and response.",
             "The motivations for the response he steered can be attributed in part to the severe loss of domestic prestige over the perceived blunder in Berlin, and the resultant undermining of his political base.",
             "Moreover, it represents a significant shift in his doctrine, going against his policy of peaceful coexistence.",
             "Arguably, his management of the crisis represented several blunders, overestimating Soviet capabilities and ultimately facing another humiliation, in addition to losing control over on-the-ground commanders, risking nuclear war.",
-            "The impact of the crisis largely fell on his shoulders, devastating his prestige and leading to his ouster 2 years later, yet he also demonstrated true commitment to his policy/principle, backing down — another failure in his foreign policy."
-          ]
+            "The impact of the crisis largely fell on his shoulders, devastating his prestige and leading to his ouster 2 years later, yet he also demonstrated true commitment to his policy/principle, backing down \u2014 another failure in his foreign policy.",
+          ],
         },
         {
-          "name": "Kennedy",
-          "bullets": [
-            "With regards to the crisis, Kennedy played the role of the responder, as opposed to the instigators — the instigation by the US was done by his predecessors and Dulles.",
-            "Kennedy himself represented a turnaround in US doctrine, a more détente-oriented president as opposed to the hawks of Truman and Eisenhower.",
+          name: "Kennedy",
+          bullets: [
+            "With regards to the crisis, Kennedy played the role of the responder, as opposed to the instigators \u2014 the instigation by the US was done by his predecessors and Dulles.",
+            "Kennedy himself represented a turnaround in US doctrine, a more d\u00e9tente-oriented president as opposed to the hawks of Truman and Eisenhower.",
             "As such, the Cuban Missile Crisis served as a test of Kennedy and his new doctrine, especially with US midterm elections ready to respond to the test.",
             "Here Kennedy chose to de-escalate, both with the Soviet Union, and thereafter with Cuba, keeping with his promise to not invade.",
-            "Kennedy’s response can be characterised as highly successful, where he successfully de-escalated the crisis, refraining from nuclear or otherwise military response — a successful centrepiece of his foreign policy as president."
-          ]
-        }
-      ]
+            "Kennedy\u2019s response can be characterised as highly successful, where he successfully de-escalated the crisis, refraining from nuclear or otherwise military response \u2014 a successful centrepiece of his foreign policy as president.",
+          ],
+        },
+      ],
     },
     {
-      "name": "Vietnam War",
-      "status": "firm",
-      "papers": [
-        "P3 CW Americas",
-        "P2 CW"
-      ],
-      "causes": "Containment logic; domino theory; French withdrawal; Gulf of Tonkin; credibility politics; gradual escalation across presidencies",
-      "impact": "US domestic upheaval (anti-war, credibility gap, War Powers Act); Nixon Doctrine; Canadian/Latin American reactions; détente context; lessons for interventionism",
-      "leaderLinks": [
-        "Eisenhower",
-        "Kennedy",
-        "Johnson",
-        "Nixon"
-      ],
-      "leaderContent": null
+      name: "Vietnam War",
+      status: "firm",
+      papers: ["P3 CW Americas", "P2 CW"],
+      causes: "Containment logic; domino theory; French withdrawal; Gulf of Tonkin; credibility politics; gradual escalation across presidencies",
+      impact: "US domestic upheaval (anti-war, credibility gap, War Powers Act); Nixon Doctrine; Canadian/Latin American reactions; d\u00e9tente context; lessons for interventionism",
+      leaderLinks: ["Eisenhower", "Kennedy", "Johnson", "Nixon"],
+      leaderContent: null,
     },
     {
-      "name": "Afghanistan",
-      "status": "firm",
-      "papers": [
-        "P2 CW"
-      ],
-      "causes": "Soviet intervention to prop up communist government; Cold War proxy logic; Brezhnev Doctrine applied; mujahideen resistance",
-      "impact": "Collapse of détente; US backing of mujahideen (Reagan Doctrine); Soviet military overextension; accelerant of USSR’s internal deterioration; Cold War’s end",
-      "leaderLinks": [
-        "Brezhnev",
-        "Reagan",
-        "Gorbachev"
-      ],
-      "leaderContent": null
-    }
+      name: "Afghanistan",
+      status: "firm",
+      papers: ["P2 CW"],
+      causes: "Soviet intervention to prop up communist government; Cold War proxy logic; Brezhnev Doctrine applied; mujahideen resistance",
+      impact: "Collapse of d\u00e9tente; US backing of mujahideen (Reagan Doctrine); Soviet military overextension; accelerant of USSR\u2019s internal deterioration; Cold War\u2019s end",
+      leaderLinks: ["Brezhnev", "Reagan", "Gorbachev"],
+      leaderContent: null,
+    },
   ],
-  "developments": {
-    "interwar": {
-      "title": "Interwar Period & Hemispheric Reactions",
-      "papers": [
-        "P3 WW2",
-        "P3 LatAm"
-      ],
-      "items": [
+  developments: {
+    interwar: {
+      title: "Interwar Period & Hemispheric Reactions",
+      papers: ["P3 WW2", "P3 LatAm"],
+      items: [
         {
-          "name": "Hemispheric Cooperation & Inter-American Diplomacy",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
+          name: "Hemispheric Cooperation & Inter-American Diplomacy",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
         },
         {
-          "name": "Good Neighbor Policy",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        }
-      ]
+          name: "Good Neighbor Policy",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+      ],
     },
-    "ww2": {
-      "title": "Second World War",
-      "papers": [
-        "P3 WW2",
-        "P3 CW Americas"
+    ww2: {
+      title: "Second World War",
+      papers: ["P3 WW2", "P3 CW Americas"],
+      items: [
+        {
+          name: "American entry to the war",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Extent and reasons for involvement",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Impact of the war",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Women & Minorities in the Americas",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Atomic Bomb \u2013 causes and significance",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
       ],
-      "items": [
-        {
-          "name": "American entry to the war",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Extent and reasons for involvement",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Impact of the war",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Women & Minorities in the Americas",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Atomic Bomb – causes and significance",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        }
-      ]
     },
-    "coldWarOrigins": {
-      "title": "Origins of Cold War",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas",
-        "P3 LatAm"
+    coldWarOrigins: {
+      title: "Origins of Cold War",
+      papers: ["P2 CW", "P3 CW Americas", "P3 LatAm"],
+      items: [
+        {
+          name: "Fear, Aggression, and Ideological Differences",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Treatment of Germany / German Question",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Conferences (Yalta, Potsdam)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Sovietisation of Eastern Europe",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Containment and Latin America",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "McCarthyism and the Red Scare",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
       ],
-      "items": [
-        {
-          "name": "Fear, Aggression, and Ideological Differences",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Treatment of Germany / German Question",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Conferences (Yalta, Potsdam)",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Sovietisation of Eastern Europe",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Containment and Latin America",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "McCarthyism and the Red Scare",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        }
-      ]
     },
-    "crisisDetente": {
-      "title": "Crisis & Détente during Cold War",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas",
-        "P3 LatAm"
+    crisisDetente: {
+      title: "Crisis & D\u00e9tente during Cold War",
+      papers: ["P2 CW", "P3 CW Americas", "P3 LatAm"],
+      items: [
+        {
+          name: "Globalisation of the Cold War \u2013 reasons",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Sino-Soviet Split",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Sino-American Rapprochement",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Peaceful Coexistence",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Failure of D\u00e9tente",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Effects of Korean War",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Effects of Vietnam",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Regional Cooperation in Latin America (Cold War era)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Liberation Theology",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
       ],
-      "items": [
-        {
-          "name": "Globalisation of the Cold War – reasons",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Sino-Soviet Split",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Sino-American Rapprochement",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Peaceful Coexistence",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Failure of Détente",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Effects of Korean War",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Effects of Vietnam",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Regional Cooperation in Latin America (Cold War era)",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Liberation Theology",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        }
-      ]
     },
-    "endOfColdWar": {
-      "title": "End of Cold War",
-      "papers": [
-        "P2 CW",
-        "P3 CW Americas",
-        "P3 LatAm"
+    endOfColdWar: {
+      title: "End of Cold War",
+      papers: ["P2 CW", "P3 CW Americas", "P3 LatAm"],
+      items: [
+        {
+          name: "Arms Race",
+          status: "standalone (short)",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Fall of Communism in Eastern Europe (as CAUSE)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
+        {
+          name: "Collapse of Communism in Eastern Europe and USSR (as IMPACT)",
+          status: "standalone",
+          absorbed: false,
+          detail: "",
+        },
       ],
-      "items": [
-        {
-          "name": "Arms Race",
-          "status": "standalone (short)",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Fall of Communism in Eastern Europe (as CAUSE)",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        },
-        {
-          "name": "Collapse of Communism in Eastern Europe and USSR (as IMPACT)",
-          "status": "standalone",
-          "absorbed": false,
-          "detail": ""
-        }
-      ]
-    }
-  }
+    },
+  },
 };
 
 // ─── SYLLABUS DATA ────────────────────────────────────────────────────────────
@@ -1452,7 +1193,7 @@ function countTotalWords(merged) {
     if (!arr) return;
     arr.forEach((c) => {
       if (typeof c === "string") { ws(c); }
-      else { if (c.body) ws(c.body); if (c.bullets) c.bullets.forEach(ws); }
+      else { if (c.title) ws(c.title); if (c.body) ws(c.body); if (c.bullets) c.bullets.forEach(ws); }
     });
   }
   function traverseLeaves(items) {
@@ -1667,8 +1408,8 @@ function SuboutlineItem({ item, depth, path, onContentClick }) {
           onClick={effectiveHasContent ? handleClick : undefined}
           style={{
             marginBottom: "5px", marginTop: "5px", padding: "8px 12px",
-            backgroundColor: effectiveHasContent ? "#f0f7f2" : "#faf9f6",
-            border: effectiveHasContent ? "1px solid #b8d9c8" : "1px solid #e0ddd6",
+            backgroundColor: effectiveHasContent ? "#fff" : "#faf9f6",
+            border: effectiveHasContent ? "1px solid #d0cec8" : "1px solid #e0ddd6",
             borderRadius: "5px", cursor: effectiveHasContent ? "pointer" : "default",
             display: "flex", justifyContent: "space-between", alignItems: "center", transition: "all 0.15s",
           }}
@@ -1861,16 +1602,21 @@ function LeaderCard({ leader, isExpanded, onToggle, onNavigate, onXRef, id }) {
 
 // ─── CRISIS ACCORDION SECTION ────────────────────────────────────────────────
 function AccordionSection({ title, isOpen, onToggle, count, onEdit, children }) {
+  const hasContent = count != null;
+  const headerBg = hasContent ? "#fff" : "#faf9f6";
+  const borderColor = hasContent ? "#d0cec8" : "#e0ddd6";
   return (
-    <div style={{ marginTop: "10px", border: "1px solid #e0ddd6", borderRadius: "4px", overflow: "hidden" }}>
+    <div style={{ marginTop: "10px", border: `1px solid ${borderColor}`, borderRadius: "4px", overflow: "hidden" }}>
       <div
         onClick={onToggle}
-        style={{ padding: "10px 14px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none", backgroundColor: isOpen ? "#f0ede6" : "#faf9f6", transition: "background 0.15s" }}
+        style={{ padding: "10px 14px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none", backgroundColor: headerBg, transition: "background 0.15s" }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "11px", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>{title}</span>
-          {count != null && (
-            <span style={{ fontSize: "9px", backgroundColor: "#264653", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontWeight: 700, fontFamily: "sans-serif" }}>{count}</span>
+          <span style={{ fontSize: "11px", fontWeight: 700, color: hasContent ? "#264653" : "#888", textTransform: "uppercase", letterSpacing: "1px" }}>{title}</span>
+          {hasContent ? (
+            <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontWeight: 700, fontFamily: "sans-serif" }}>{count}</span>
+          ) : (
+            <span style={{ fontSize: "9px", color: "#bbb", fontStyle: "italic", fontFamily: "sans-serif" }}>empty</span>
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1885,7 +1631,7 @@ function AccordionSection({ title, isOpen, onToggle, count, onEdit, children }) 
           <span style={{ fontSize: "14px", color: "#888", transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "rotate(0)" }}>{"\u25B6"}</span>
         </div>
       </div>
-      {isOpen && <div style={{ padding: "12px 14px", borderTop: "1px solid #e0ddd6" }}>{children}</div>}
+      {isOpen && <div style={{ padding: "12px 14px", borderTop: `1px solid ${borderColor}` }}>{children}</div>}
     </div>
   );
 }
@@ -2005,9 +1751,29 @@ function CrisisCard({ crisis, isExpanded, onToggle, onNavigate, onXRef, id }) {
 }
 
 // ─── DEVELOPMENTS SECTION ────────────────────────────────────────────────────
-function DevSection({ title, items, papers, onNavigate }) {
-  const [expanded, setExpanded] = useState({});
+function DevItem({ item }) {
+  const [isOpen, setIsOpen] = useState(false);
   const { overlay, onEdit } = React.useContext(EditContext);
+  const devKey = `dev > ${item.name}`;
+  const effectiveDetail = overlay[devKey] !== undefined ? overlay[devKey] : item.detail;
+  const cardCount = Array.isArray(effectiveDetail) ? effectiveDetail.length : 0;
+  const count = cardCount > 0 ? `${cardCount} card${cardCount !== 1 ? "s" : ""}` : null;
+  return (
+    <div id={`dev-${item.name.replace(/\s+/g, "-")}`}>
+      <AccordionSection
+        title={item.name}
+        isOpen={isOpen}
+        onToggle={() => setIsOpen(o => !o)}
+        count={count}
+        onEdit={() => onEdit(["dev", item.name], effectiveDetail)}
+      >
+        <ContentRenderer paragraphs={effectiveDetail} />
+      </AccordionSection>
+    </div>
+  );
+}
+
+function DevSection({ title, items, papers, onNavigate }) {
   return (
     <div style={{ marginBottom: "20px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", flexWrap: "wrap" }}>
@@ -2016,66 +1782,9 @@ function DevSection({ title, items, papers, onNavigate }) {
           <PaperBadge key={p} paper={p} onNavigate={onNavigate} />
         ))}
       </div>
-      {items.map((item, i) => {
-        const devKey = `dev > ${item.name}`;
-        const effectiveDetail = overlay[devKey] !== undefined ? overlay[devKey] : item.detail;
-        const isCards = Array.isArray(effectiveDetail) && effectiveDetail.length > 0;
-        const isText = typeof effectiveDetail === 'string' && effectiveDetail.length > 0;
-        const hasDetail = isCards || isText;
-        const isOpen = expanded[i];
-        return (
-          <div key={i} id={`dev-${item.name.replace(/\s+/g, "-")}`} style={{ paddingLeft: "0" }}>
-            <div
-              onClick={() => hasDetail && setExpanded((prev) => ({ ...prev, [i]: !prev[i] }))}
-              style={{ marginBottom: "5px", marginTop: "5px", padding: "8px 12px", backgroundColor: hasDetail ? "#f0f7f2" : "#faf9f6", border: `1px solid ${hasDetail ? "#b8d9c8" : "#e0ddd6"}`, borderRadius: isOpen ? "5px 5px 0 0" : "5px", cursor: hasDetail ? "pointer" : "default", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "all 0.15s", userSelect: "none" }}
-            >
-              <span style={{ fontSize: "12px", fontWeight: hasDetail ? 600 : 400, color: hasDetail ? "#264653" : "#888", fontFamily: "'Georgia', serif", lineHeight: 1.4 }}>
-                {item.name}
-              </span>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-                {isCards ? (
-                  <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontFamily: "sans-serif", fontWeight: 700, letterSpacing: "0.3px" }}>
-                    {effectiveDetail.length} {effectiveDetail.length === 1 ? "card" : "cards"}
-                  </span>
-                ) : isText ? (
-                  <span style={{ fontSize: "9px", backgroundColor: "#2D6A4F", color: "#fff", borderRadius: "3px", padding: "1px 6px", fontFamily: "sans-serif", fontWeight: 700, letterSpacing: "0.3px" }}>note</span>
-                ) : (
-                  <span style={{ fontSize: "9px", color: "#bbb", fontStyle: "italic", fontFamily: "sans-serif" }}>empty</span>
-                )}
-                <button
-                  onClick={(e) => { e.stopPropagation(); onEdit(["dev", item.name], effectiveDetail); }}
-                  title="Edit content"
-                  style={{ fontSize: "11px", padding: "1px 6px", backgroundColor: "transparent", color: "#bbb", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", lineHeight: 1.4, transition: "all 0.15s" }}
-                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#264653"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#264653"; }}
-                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#bbb"; e.currentTarget.style.borderColor = "#ddd"; }}
-                >✎</button>
-                {hasDetail && (
-                  <span style={{ fontSize: "9px", color: "#aaa", fontFamily: "sans-serif", display: "inline-block", transition: "transform 0.15s", transform: isOpen ? "rotate(90deg)" : "rotate(0)" }}>{"\u25B6"}</span>
-                )}
-              </div>
-            </div>
-            {isOpen && hasDetail && (
-              <div style={{ padding: "10px 12px 12px", backgroundColor: "#f0f7f2", border: "1px solid #b8d9c8", borderTop: "none", borderRadius: "0 0 5px 5px", marginTop: "-5px", marginBottom: "5px" }}>
-                {isCards ? (
-                  effectiveDetail.map((card, ci) => (
-                    <div key={ci} style={{ marginBottom: ci < effectiveDetail.length - 1 ? "10px" : "0" }}>
-                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#264653", fontFamily: "'Georgia', serif", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.4px" }}>{card.title}</div>
-                      {(card.bullets || []).map((b, bi) => (
-                        <div key={bi} style={{ display: "flex", gap: "6px", fontSize: "12px", color: "#444", fontFamily: "'Georgia', serif", lineHeight: 1.5, paddingLeft: "4px" }}>
-                          <span style={{ color: "#2D6A4F", flexShrink: 0 }}>•</span>
-                          <span>{b}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ))
-                ) : (
-                  <p style={{ margin: 0, fontSize: "12px", color: "#555", fontFamily: "'Georgia', serif", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{effectiveDetail}</p>
-                )}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {items.map((item, i) => (
+        <DevItem key={i} item={item} />
+      ))}
     </div>
   );
 }
@@ -2161,8 +1870,7 @@ function SyllabusTab({ onNavigate }) {
 }
 
 // ─── SUMMARY + PROGRESS TRACKER ──────────────────────────────────────────────
-function Summary() {
-  const { overlay } = React.useContext(EditContext);
+function Summary({ overlay }) {
   const merged = getMergedData(overlay);
 
   const allDevItems = Object.values(merged.developments).flatMap((d) => d.items);
@@ -2719,7 +2427,7 @@ function App() {
         {showCommitPreview && <CommitPreviewModal overlay={editOverlay} onConfirm={() => { setShowCommitPreview(false); saveToGitHub(); }} onClose={() => setShowCommitPreview(false)} />}
       </div>
 
-      <Summary />
+      <Summary overlay={editOverlay} />
 
       <div style={{ display: "flex", gap: "2px", marginBottom: "20px", borderBottom: "2px solid #264653", flexWrap: "wrap" }}>
         {tabs.map((t) => (
